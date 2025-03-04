@@ -1,0 +1,3168 @@
+// Fire ant specific model, with monogyne and polygyne
+initialize() {
+	
+	// Gene drive parameters:
+	// Fitness parameters:
+	defineCfgParam("DRIVE_CONVERSION", 0.95); //vary from 0.5-1
+	defineCfgParam("DD_FITNESS_VALUE", 1.0);  //drive homozygote fitness value (vary from 0.8-1)
+	defineCfgParam("DX_FITNESS_VALUE", sqrt(DD_FITNESS_VALUE));
+	defineCfgParam("SOMATIC_FITNESS_MUTLIPLIER_F", 0.98); //vary from 0.5-1 
+	defineCfgParam("R2_FITNESS_VALUE", 1.0);
+	// Drive type:
+	defineCfgParam("HOMING_DRIVE", T);
+	defineCfgParam("HAPLOLETHAL_DRIVE", F);
+	defineCfgParam("RECESSIVE_LETHAL_DRIVE", F);
+	defineCfgParam("RECESSIVE_FEMALE_STERILE_SUPPRESSION_DRIVE", T);
+	defineCfgParam("DOMINANT_STERILE_R2", F);
+	defineCfgParam("HAPLOLETHAL_SUPPRESSION_DRIVE", F);
+	// Resistance phase parameters:
+	defineCfgParam("NUM_CUT_PHASES", 1);
+	defineCfgParam("GERMLINE_RESISTANCE_CUT_RATE_F", 0.0); //0-100% of remaining wild type alleles
+	defineCfgParam("GERMLINE_RESISTANCE_CUT_RATE_M", 0.0);
+	defineCfgParam("LATE_GERMLINE_RESISTANCE_CUT_RATE_F", 0.5);
+	defineCfgParam("LATE_GERMLINE_RESISTANCE_CUT_RATE_M", 0.0);
+	defineCfgParam("EMBRYO_RESISTANCE_CUT_RATE_F", 0.05); //vary from 0-0.5
+	defineCfgParam("EMBRYO_RESISTANCE_CUT_RATE_M", 0.0);
+	defineCfgParam("HET_MOTHER_CAS_INHERITANCE", 1.83);
+	defineCfgParam("R1_OCCURRENCE_RATE", 0.0);
+	// HDR phase parameters:
+	defineCfgParam("HOMING_PHASE_CUT_RATE_F", DRIVE_CONVERSION);
+	defineCfgParam("HOMING_PHASE_CUT_RATE_M", 0.0);
+	defineCfgParam("HOMING_EDGE_EFFECT", 0.055);
+	defineCfgParam("BASELINE_HOMING_SUCCESS_RATE", 1.0);
+	defineCfgParam("PARTIAL_HDR_RATE", 0.0);
+	defineCfgParam("PER_OFFSET_PARTIAL_HDR_RATE_INCREASE", 0.0);
+	defineCfgParam("PARTIAL_HDR_R1_RATE", 0.0);
+	// General drive parameters:
+	defineCfgParam("NUM_GRNAS", 1);
+	defineCfgParam("GRNA_ACTIVITY_VARIATION", 0.0);
+	defineCfgParam("GLOBAL_SATURATION_FACTOR", 1.5); // Has no effect when set to 2.
+	defineCfgParam("MALE_ONLY_PROMOTER", F);
+	defineCfgParam("GRNA_SATURATION_SIMULATED", F);
+	
+	// Individual parameters:
+	//defineCfgParam("BETAMAX", 4.445075905*2);
+	defineCfgParam("NUM_MALE", 500000);
+	defineCfgParam("RELEASE_RATIO",0.075);  //actual=ratio*2
+	// Monogyne Colony size thing
+	defineCfgParam("AGE1_COMPETITION_DIST", 0.002815309);
+	defineCfgParam("AGE2_COMPETITION_DIST", 0.005049545);
+	defineCfgParam("AGE3_COMPETITION_DIST", 0.008026399);
+	defineCfgParam("AGE4_COMPETITION_DIST", 0.010503456);
+	defineCfgParam("AGE5_COMPETITION_DIST", 0.011700657);
+	defineCfgParam("AGE6_COMPETITION_DIST", 0.01210487);
+	defineCfgParam("AGE7_COMPETITION_DIST", 0.012222496);
+	// Polygyne
+	
+	
+	defineCfgParam("POLY_AGE1_COMP_DIST", 0.002815309);
+	defineCfgParam("POLY_AGE2_COMP_DIST", 0.005049545);
+	defineCfgParam("POLY_AGE3_COMP_DIST", 0.008026399);
+	defineCfgParam("POLY_AGE4_COMP_DIST", 0.010503456);
+	defineCfgParam("POLY_AGE5_COMP_DIST", 0.011700657);
+	defineCfgParam("POLY_AGE6_COMP_DIST", 0.01210487);
+	defineCfgParam("POLY_AGE7_COMP_DIST", 0.012222496);
+	defineCfgParam("POLY_AGE8_COMP_DIST", 0.012255144);
+	defineCfgParam("POLY_MATURE_COMP_DIST", 0.012265); // for the colonies age greater than 8  0.012264089
+	//0.01226653
+	
+	// For monogyne
+	defineCfgParam("MONOGYNE_DIST", 0.054159);  //migration rate
+	defineCfgParam("NUM_MONOGYNE", 100000);//100000
+	defineCfgParam("MONO_REPRODUCTION_FACTOR",0.95);
+	
+	
+	// For polygyne
+	defineCfgParam("POLYGYNE_MALE_RATE",0.837352526);
+	defineCfgParam("PROB_OF_GENOME_CHANGE",0.5);
+	defineCfgParam("POLYGYNE_DIST", 0.054159); //Have same migration as monogyne
+	defineCfgParam("POLYGYNE_MIGRATION", 0.5*0.054159); //Half for changing queens
+	//defineCfgParam("POLY_COMPETITION_DIST", 0.03);  
+	defineCfgParam("NUM_POLYGYNE", 61882);// 61882 for pure
+	defineCfgParam("REPRO_FACTOR",3);
+	defineCfgParam("POLY_REPRODUCTION_FACTOR",REPRO_FACTOR*0.837352526);
+	defineCfgParam("POLYGYNE_INTRA_COMPETITION", 1/1.2);//1/1.2 instead of 0.95 for pure model
+	defineCfgParam("PERCENT_POLYGYNE",0.5);
+	defineCfgParam("INTERSPECIFIC_COMP_FACTOR",0.0);
+	//For combination model(half monogyne half polygyne)
+	defineConstant("EXPECTED_MONOGYNE_COMPETITION", 639218.7218);//800659.5041
+	defineConstant("EXPECTED_POLYGYNE_COMPETITION", 639218.7218);//720759.7208
+	defineCfgParam("SOMATIC_EXPRESSION_FITNESS_MULTIPLIER", 1.0);
+	defineCfgParam("DISTANT_SITE", F);
+	if(DISTANT_SITE){
+		defineCfgParam("SOMATIC_EXPRESSION_FITNESS_MULTIPLIER", 0.0);  //Is it the same as somatic fitness multiplier in Female?
+		defineCfgParam("OFF_TARGET_EMBRYO", EMBRYO_RESISTANCE_CUT_RATE_F);
+		defineCfgParam("OFF_TARGET_CUT_RATE", 0.9); //total_cut_rate/
+		defineCfgParam("DISTANT_SITE_RECESSIVE_FEMALE", T);
+		defineCfgParam("DISTANT_SITE_X_LINKED",T);
+		defineCfgParam("DRIVE_TYPE", "haplolethal_Xlinkedfertility");
+		if (DRIVE_TYPE == "haplolethal_Xlinkedfertility")
+			defineCfgParam("HAPLOLETHAL_DRIVE", T);
+		else if (DRIVE_TYPE == "recessivelethal_Xlinkedfertility")
+			defineCfgParam("RECESSIVE_LETHAL_DRIVE", T);
+		defineCfgParam("OFF_TARGET_FITNESS_MULTIPLIER",1.0);
+	}
+	
+	// Drop parameters
+	// Spatial for dropping individuals:    
+	defineConstant("REPRISING_BOUNDARIES", T); // Toroidal if false
+	defineConstant("DROP_RADIUS", 0.1);
+	defineConstant("SPOT", 1.2533141373155);
+	// Ecology and drop parameters:
+	defineCfgParam("MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE", 10);
+	defineConstant("LOW_DENSITY_FACTOR",0.2335/MONO_REPRODUCTION_FACTOR);
+	defineCfgParam("LOW_DENSITY_GROWTH_RATE", 6*LOW_DENSITY_FACTOR);
+	//defineCfgParam("LONG_MIGRATION_RATE", 0); //vary from 0-0.01
+	defineCfgParam("MALE_ONLY_DROP", F);
+	defineCfgParam("FEMALE_ONLY_DROP", T);
+	defineCfgParam("HETEROZYGOUS_DROP", T);
+	defineConstant("NO_DROP", F);
+	defineConstant("TRACK_BY_CELL", T);
+	//defineConstant("TOTAL",133208/2);
+	defineConstant("EQUILIBRIUM_WT_ALLELE_THRESHOLD", 0.8*133208);
+	//New_chasing parameters
+	defineCfgParam("SIM_BOUND",1);
+	defineGlobal("chasing_cells",c());
+	defineCfgParam("AVERAGE_DISTANCE",0.05);
+	defineConstant("NUMBER_OF_CELLS", asInteger(round(SIM_BOUND/AVERAGE_DISTANCE)^2));//64
+	catn("NUMBER_OF_CELLS: "+NUMBER_OF_CELLS);
+	defineGlobal("cell_pop_size",-1); //the pop size in all cells of five generations before
+	for (i in 2:(NUMBER_OF_CELLS*6)){
+		defineGlobal("cell_pop_size",c(cell_pop_size,-1));
+	}
+	defineGlobal("time_pop_size",c(-1,-1,-1,-1,-1,-1)); // the whole pop size in five generations before
+	
+	// Genetic load stuff.
+	defineCfgParam("GL_RUN", F);
+	defineConstant("BONUS_POP_FACTOR", 1.0);
+	defineConstant("PREV_BONUS_POP_FACTOR", 1.0);
+	defineConstant("ACTUAL_LARVAE", 0);
+	
+	// Calculate activity step between each gRNA.
+	if (NUM_GRNAS == 1)
+		defineConstant("GRNA_ACTIVITY_STEP", 0);
+	else
+		defineConstant("GRNA_ACTIVITY_STEP", (2 * GRNA_ACTIVITY_VARIATION)  / (NUM_GRNAS - 1));
+	
+	
+	initializeSLiMModelType("nonWF");
+	
+	if (REPRISING_BOUNDARIES)
+		initializeSLiMOptions(keepPedigrees = T, dimensionality = "xy");
+	else
+		initializeSLiMOptions(keepPedigrees=T, dimensionality="xy", periodicity="xy");
+	
+	// Four variations: Wild type, drive, r1 resistance, r2 resistance.
+	// 'cut' is a temporary placeholder, and 'gap' represents a missing segment.
+	wt = initializeMutationType("m1", 0.5, "f", 0.0);
+	dr = initializeMutationType("m2", 0.5, "f", 0.0);
+	r1 = initializeMutationType("m3", 0.5, "f", 0.0);
+	r2 = initializeMutationType("m4", 0.5, "f", 0.0);
+	cut = initializeMutationType("m5", 0.5, "f", 0.0);
+	gap = initializeMutationType("m6", 0.5, "f", 0.0);
+	variations = c(wt, dr, r1, r2, cut, gap);
+	
+	SB = initializeMutationType("m7", 0.5, "f", 0.0);
+	poly = initializeMutationType("m8", 0.5, "f", 0.0);
+	social = c(SB, poly);
+	
+	if(!DISTANT_SITE){
+		// Variations are all part of g1 genome element.
+		initializeGenomicElementType("g1", c(variations, social) , c(1, 1, 1, 1, 1, 1, 1, 1));
+		// Element is NUM_GRNAS long, each spot on the element representing a GRNA target location.
+		initializeGenomicElement(g1, 0, 3);
+		// These variations overwrite one another.
+		variations.mutationStackPolicy = "l";
+		variations.mutationStackGroup = 1;
+		social.mutationStackPolicy = "l";
+		social.mutationStackGroup = 1;
+	}
+	if(DISTANT_SITE){
+		distant_effect = initializeMutationType("m9", 0.5, "f", 0.0);//distant_r2
+		distant_wt = initializeMutationType("m10", 0.5, "f", 0.0);
+		distance = c(distant_effect, distant_wt);
+		initializeGenomicElementType("g1", c(variations, social, distance) , c(1, 1, 1, 1, 1, 1, 1,1, 1,1));
+		// These variations overwrite one another.
+		variations.mutationStackPolicy = "l";
+		variations.mutationStackGroup = 1;
+		social.mutationStackPolicy = "l";
+		social.mutationStackGroup = 1;
+		distance.mutationStackPolicy = "l";
+		distance.mutationStackGroup = 1;
+		initializeGenomicElement(g1, 0, 6);
+	}
+	
+	// No mutation in this monogyne.
+	initializeMutationRate(0.0);
+	if(DISTANT_SITE){
+		rates= c(0,0.5,0,0,0.5,0);
+		ends = c(1,2,3,4,5,6);
+	}
+	if(!DISTANT_SITE){
+		rates = c(0,0.5,0);
+		ends = c(1,2,3);
+	}
+	initializeRecombinationRate(rates,ends);
+	// Simulate sexual reproduction: A for autosome.
+	initializeSex("A");
+	
+	//FOR NNI
+	initializeInteractionType(20, "xy", reciprocal=T, maxDistance=sqrt(2));
+	// monogyne/Polygyne Mate searching:
+	initializeInteractionType(1, "xy", reciprocal=T, maxDistance=MONOGYNE_DIST);
+	
+	// polygyne Mate searching:
+	//initializeInteractionType(3, "xy", reciprocal=T, maxDistance=POLYGYNE_DIST);
+	// polygyne migration:
+	initializeInteractionType(10, "xy", reciprocal=T, maxDistance=POLYGYNE_MIGRATION);
+	
+	// Different colony size competition for monogyne:(i2-i9 exclude i3)
+	initializeInteractionType(2, "xy", reciprocal=T, maxDistance=AGE1_COMPETITION_DIST);
+	i2.setInteractionFunction("l", 1.0);
+	initializeInteractionType(4, "xy", reciprocal=T, maxDistance=AGE2_COMPETITION_DIST);
+	i4.setInteractionFunction("l", 1.0);
+	initializeInteractionType(5, "xy", reciprocal=T, maxDistance=AGE3_COMPETITION_DIST);
+	i5.setInteractionFunction("l", 1.0);
+	initializeInteractionType(6, "xy", reciprocal=T, maxDistance=AGE4_COMPETITION_DIST);
+	i6.setInteractionFunction("l", 1.0);
+	initializeInteractionType(7, "xy", reciprocal=T, maxDistance=AGE5_COMPETITION_DIST);
+	i7.setInteractionFunction("l", 1.0);
+	initializeInteractionType(8, "xy", reciprocal=T, maxDistance=AGE6_COMPETITION_DIST);
+	i8.setInteractionFunction("l", 1.0);
+	initializeInteractionType(9, "xy", reciprocal=T, maxDistance=AGE7_COMPETITION_DIST);
+	i9.setInteractionFunction("l", 1.0);
+	
+	// Different colony size competition for polygyne: (i11-i19)
+	initializeInteractionType(11, "xy", reciprocal=T, maxDistance=POLY_AGE1_COMP_DIST);
+	i11.setInteractionFunction("l", 1.0);
+	initializeInteractionType(12, "xy", reciprocal=T, maxDistance=POLY_AGE2_COMP_DIST);
+	i12.setInteractionFunction("l", 1.0);
+	initializeInteractionType(13, "xy", reciprocal=T, maxDistance=POLY_AGE3_COMP_DIST);
+	i13.setInteractionFunction("l", 1.0);
+	initializeInteractionType(14, "xy", reciprocal=T, maxDistance=POLY_AGE4_COMP_DIST);
+	i14.setInteractionFunction("l", 1.0);
+	initializeInteractionType(15, "xy", reciprocal=T, maxDistance=POLY_AGE5_COMP_DIST);
+	i15.setInteractionFunction("l", 1.0);
+	initializeInteractionType(16, "xy", reciprocal=T, maxDistance=POLY_AGE6_COMP_DIST);
+	i16.setInteractionFunction("l", 1.0);
+	initializeInteractionType(17, "xy", reciprocal=T, maxDistance=POLY_AGE7_COMP_DIST);
+	i17.setInteractionFunction("l", 1.0);
+	initializeInteractionType(18, "xy", reciprocal=T, maxDistance=POLY_AGE8_COMP_DIST);
+	i18.setInteractionFunction("l", 1.0);
+	initializeInteractionType(19, "xy", reciprocal=T, maxDistance=POLY_MATURE_COMP_DIST);
+	i19.setInteractionFunction("l", 1.0);
+}
+
+
+//// HELPER FUNC FOR CONSTANTS THAT MAY ASLO BE CONFIGURED VIA COMMAND LINE.
+function (void) defineCfgParam(string$ name, lifs value) {
+	if (!exists(name))
+		defineConstant(name, value);
+}
+
+//// HELPER FUNCTION FOR FORMING A RESISTANCE ALLELE AT A GIVEN LOCUS.
+function (void)addResistanceAllele(o<Genome>$ genome, i$ locus) {
+	// Resistance alleles form at a specified rate.
+	// m3 is R1 allele, m4 is R2.
+	if(runif(1) < R1_OCCURRENCE_RATE)
+		genome.addNewDrawnMutation(m3, locus);
+	else
+		genome.addNewDrawnMutation(m4, locus);
+}
+
+//// FUNCTION FOR CAS9 EFFECTS IN THE GERMLINE.
+function (void)germline(o<Genome>$ child_chromosome, o<Individual>$ parent, f$ resistance_rate){
+	parent_drive_count = sum(parent.genomes.countOfMutationsOfType(m2) == NUM_GRNAS);
+	if (!parent_drive_count) // If parent doesn't have drive allele, nothing happens in germline.
+		return;
+	if (child_chromosome.countOfMutationsOfType(m1) == 0) // Chromosome must have wt to cut, or nothing happens.
+		return;
+	
+	// Using the resistance rate passed to the function,
+	// determine the per phase cut rate.
+	grna_factor = 1;
+	
+	// This model allows for varying rates of cutting at each locus.
+	// Therefore, the cut rate is a vector of rates.
+	cas_factor = 1;
+	local_cas_factor = cas_factor;
+	local_cut_rate = 1 - (1 - resistance_rate)^(local_cas_factor);
+	// The above cut rate is the first rate in the vector.
+	cut_rates = local_cut_rate;
+	// Now fill in the rest of the vector.
+	/*for (i in seqLen(NUM_GRNAS - 1)) {
+		local_cas_factor = 1;
+		local_cut_rate = 1 - (1 - resistance_rate);
+		// Concatenate the previous vector with the next cut rate calculated:
+		cut_rates = c(cut_rates, local_cut_rate);
+	}*/
+	
+	// Determine if cas9 cuts the chromosome in the germline.
+	casCut(child_chromosome, cut_rates);
+}
+
+//// FUNCTION FOR CAS9 EFFECTS IN EMBRYO.
+function (void)embryo(o<Genome>$ child_chromosome_1, o<Genome>$ child_chromosome_2, o<Individual>$ mother, f$ resistance_rate) {
+	// Determine presence of drive in this mother.
+	mother_drive_count = sum(mother.genomes.countOfMutationsOfType(m2) == NUM_GRNAS);
+	
+	// If mother doesn't have drive allele, nothing happens in embryo.
+	if (!mother_drive_count)
+		return;
+	
+	// Determine the per phase cut rate.
+	if (HOMING_DRIVE & sum(mother.genomes.countOfMutationsOfType(m1) == NUM_GRNAS) == 1)
+		// Special case for homing drive individual that is dr/wt based on experimental data.
+		mother_drive_count = HET_MOTHER_CAS_INHERITANCE;
+	
+	grna_factor = 1;
+	
+	// This model allows for varying rates of cutting at each locus.
+	// Therefore, the cut rate is a vector of rates.
+	cas_factor = 1;
+	local_cas_factor = 1;
+	local_cut_rate = 1 - (1 - resistance_rate)^(mother_drive_count);
+	cut_rates = local_cut_rate;
+	// Now fill in the rest of the vector.
+	/*for (i in seqLen(NUM_GRNAS - 1)) {
+		local_cas_factor = cas_factor * (1 + GRNA_ACTIVITY_VARIATION - (i + 1) * GRNA_ACTIVITY_STEP);
+		local_cut_rate = 1 - (1 - resistance_rate)^(mother_drive_count * local_cas_factor / (NUM_CUT_PHASES * grna_factor));
+		// Concatenate the previous vector with the next cut rate calculated:
+		cut_rates = c(cut_rates, local_cut_rate);
+	}*/
+	
+	// Then pass the rates as an argument to the casCut funtion to
+	// determine if cas9 cuts in the embryo for each chromosome.
+	casCut(child_chromosome_1, cut_rates);
+	casCut(child_chromosome_2, cut_rates);
+	
+	if(DISTANT_SITE){
+		// Rate of cutting, modified by gRNA saturation, if toggled on.
+		cas_factor = GLOBAL_SATURATION_FACTOR * grna_factor / (GLOBAL_SATURATION_FACTOR - 1 + grna_factor);
+		cut_rate = 1 - (1 - OFF_TARGET_EMBRYO)^(cas_factor / grna_factor); //embyro resistance cut rate
+		
+		for (i in child_chromosome_1.positionsOfMutationsOfType(m10))
+			if (runif(1) < cut_rate)
+				child_chromosome_1.addNewDrawnMutation(m9, i);
+		
+		for (i in child_chromosome_2.positionsOfMutationsOfType(m10))
+			if (runif(1) < cut_rate)
+				child_chromosome_2.addNewDrawnMutation(m9, i);
+	}
+}
+
+//// FUNCTION FOR CAS9 EFFECTS IN EMBRYO.
+function (void)male_deposition(o<Genome>$ child_chromosome_1, o<Genome>$ child_chromosome_2, o<Individual>$ parent, f$ resistance_rate) {
+	// If father doesn't have drive allele, no paternal deposition happens.
+	if (parent.tag != -2| parent.tag !=-6)
+		return;
+	if(parent.tag != 2 | parent.tag !=6)
+		return;
+	/*if (maternal != 2 & paternal != 2)
+       return;*/
+	
+	// Established: father had drive and child is female.
+	if (child_chromosome_1.countOfMutationsOfType(m2) | child_chromosome_2.countOfMutationsOfType(m2)) {
+		if (child_chromosome_1.countOfMutationsOfType(m1) | child_chromosome_2.countOfMutationsOfType(m1)) {
+			// Child is D/+
+			if (runif(1) < resistance_rate) {
+				for (i in seqLen(NUM_GRNAS)) {
+					// Convert the child to D/R2.
+					child_chromosome_1.addNewDrawnMutation(m4, i);
+					child_chromosome_2.addNewDrawnMutation(m2, i);
+				}
+			}
+		}
+	}
+}
+
+//// FUNCTION FOR CAS9 CUTTING A TARGET CHROMOSOME.
+function (void)casCut(o<Genome>$ chromosome, f cut_rates) {
+	// If chromosome has no wild type targets to cut, cas9 does nothing.
+	if (chromosome.countOfMutationsOfType(m1) == 0)
+		return;
+	// Vector of possible loci for cas9 to cut:
+	wt_loci = chromosome.positionsOfMutationsOfType(m1);
+	
+	// In each cut phase...
+	for (i in seqLen(NUM_CUT_PHASES)) {
+		// At each possible locus...
+		for (j in seqAlong(wt_loci)) {
+			// Check to see if cas9 cuts...
+			if (runif(1) < cut_rates[j]) {
+				// Convert the locus temporarily to an m5,
+				// representing that this site is being cut.
+				chromosome.addNewDrawnMutation(m5, wt_loci[j]);
+			}
+		}
+		// If any cuts were made...
+		if (chromosome.countOfMutationsOfType(m5)) {
+			cut_loci = chromosome.positionsOfMutationsOfType(m5);
+			// If just one cut is made, create an R1 or R2 resistance allele.
+			if (chromosome.countOfMutationsOfType(m5) == 1)
+				addResistanceAllele(chromosome, cut_loci[0]);
+			else {
+				// If mutlple cuts are made in the same cut phase, loss of
+				// function results. Convert leftmost site to m4 (R2) and
+				// everthing else through the rightmost site to m6 (cut).
+				number_of_cuts = cut_loci[size(cut_loci) - 1] - cut_loci[0];
+				for (index in seqLen(number_of_cuts))
+					chromosome.addNewDrawnMutation(m6, cut_loci[0] + index + 1);
+				chromosome.addNewDrawnMutation(m4, cut_loci[0]);
+			}
+			// Because some wt loci may have been cut out of the
+			// chromosome, remake the vector of possible cut sites
+			// to use during the next iteration of the for loop:
+			if (chromosome.countOfMutationsOfType(m1) == 0)
+				return;
+			wt_loci = chromosome.positionsOfMutationsOfType(m1);
+		}
+	}
+}
+
+
+//// FUNCTION FOR SIMULATING HOMOLOGY DIRECTED REPAIR.
+function (void)hdr(o<Genome>$ chromosome, o<Individual>$ parent, f$ cut_rate) {
+	// If chromosome has no wild type targets to cut, cas9 does nothing.
+	if (chromosome.countOfMutationsOfType(m1) == 0)
+		return;
+	// Determine presence of drive in this parent.	
+	parent_c1_drive = parent.genome1.countOfMutationsOfType(m2) == NUM_GRNAS;
+	parent_c2_drive = parent.genome2.countOfMutationsOfType(m2) == NUM_GRNAS;
+	parent_has_drive = parent_c1_drive | parent_c2_drive;
+	// If parent doesn't have drive allele, nothing happens.
+	if (!parent_has_drive)
+		return;
+	
+	// Rate of cutting during hdr, modified by gRNA saturation and variable cutting activity, if toggled on.
+	// This model allows for varying rates of cutting at each locus.
+	grna_factor = 1;
+	
+	if(DISTANT_SITE){
+		cas_factor = GLOBAL_SATURATION_FACTOR * grna_factor / (GLOBAL_SATURATION_FACTOR - 1 + grna_factor);
+		cut_rate = 1 - (1 - OFF_TARGET_CUT_RATE)^(cas_factor / grna_factor);
+		for (i in chromosome.positionsOfMutationsOfType(m10))
+			if (runif(1) < cut_rate)
+				chromosome.addNewDrawnMutation(m9, i);
+	}
+	
+	cas_factor = 1;
+	local_cas_factor = 1;
+	local_cut_rate = 1 - (1 - cut_rate);
+	cut_rates = local_cut_rate;
+	// Now fill in the rest of the vector.
+	/*for (i in seqLen(NUM_GRNAS - 1)) {
+		local_cas_factor = cas_factor * (1 + GRNA_ACTIVITY_VARIATION - (i + 1) * GRNA_ACTIVITY_STEP);
+		local_cut_rate = 1 - (1 - cut_rate)^(local_cas_factor / grna_factor);
+		// Concatenate the previous vector with the next cut rate calculated:
+		cut_rates = c(cut_rates, local_cut_rate);
+	}*/
+	
+	// Vector of possible loci.
+	wt_loci = chromosome.positionsOfMutationsOfType(m1);
+	
+	// At each possible locus...
+	for (i in seqAlong(wt_loci))
+		// Check to see if cas9 cuts...
+		if (runif(1) < cut_rates[i])
+			// Convert the locus temporarily to an m5,
+			// representing that this site is being cut.
+			chromosome.addNewDrawnMutation(m5, wt_loci[i]);
+	
+	// If any cuts were made...
+	if (chromosome.countOfMutationsOfType(m5)) {
+		// Determine how extreme the cuts are relative to the target package (the drive).
+		cut_loci = chromosome.positionsOfMutationsOfType(m5);
+		leftmost_cut_index = cut_loci[0];
+		rightmost_cut_index = cut_loci[size(cut_loci) - 1];
+		// Sections that have already been cut out of the chromosome
+		// also contribute to the size of the cut section.
+		missing_loci = chromosome.positionsOfMutationsOfType(m6);
+		// Adjusted indecies are offsets from the full span of the possible cut loci.
+		adjusted_left_index = leftmost_cut_index - sum(missing_loci < leftmost_cut_index);
+		rightmost_cut_index = rightmost_cut_index + sum(missing_loci > rightmost_cut_index);
+		adjusted_right_index = NUM_GRNAS - 1 - rightmost_cut_index;
+		
+		// Rate of sucessfull homing varies depending on how well the gap matches the homology arm of the drive .
+		successful_homing_rate = (1 - HOMING_EDGE_EFFECT * adjusted_left_index) * (1 - HOMING_EDGE_EFFECT * adjusted_right_index);
+		
+		// Check to see if homing succeeds.
+		if (runif(1) < successful_homing_rate)
+			for (i in seqLen(NUM_GRNAS))
+				chromosome.addNewDrawnMutation(m2, i);
+		else {
+			// A small percentage of of individuals repair the chromosome with partial HDR,
+			// resulting in the entire section of the chromosome becoming a resistance allele.
+			final_partial_hdr_rate = 1 - (1 - PARTIAL_HDR_RATE) * (1 - PER_OFFSET_PARTIAL_HDR_RATE_INCREASE * adjusted_left_index) * (1 - PER_OFFSET_PARTIAL_HDR_RATE_INCREASE * adjusted_right_index);
+			if (runif(1) < final_partial_hdr_rate) {
+				// Rarely, partial HDR results in a total R1 allele, though only in haplolethal or recessive lethal drives:
+				total_r1_rate = PARTIAL_HDR_R1_RATE * (1 + adjusted_right_index - adjusted_left_index);
+				if (runif(1) < total_r1_rate & (HAPLOLETHAL_DRIVE | RECESSIVE_LETHAL_DRIVE))
+					for (i in seqLen(NUM_GRNAS))
+						chromosome.addNewDrawnMutation(m3, i);
+				else
+					for (i in seqLen(NUM_GRNAS))
+						chromosome.addNewDrawnMutation(m4, i);
+			}
+			// If neither homing nor partial HDR occur, normal repair happens.
+			else {
+				// If just one cut was made, create an R1 or R2 resistance allele.
+				if (chromosome.countOfMutationsOfType(m5) == 1)
+					addResistanceAllele(chromosome, cut_loci[0]);
+				else {
+					// If mutlple cuts were made, leftmost site to m4 (R2),
+					// everthing else through the rightmost site to m6 (cut).
+					number_of_cuts = cut_loci[size(cut_loci) - 1] - cut_loci[0];
+					for (index in seqLen(number_of_cuts))
+						chromosome.addNewDrawnMutation(m6, cut_loci[0] + index + 1);
+					chromosome.addNewDrawnMutation(m4, cut_loci[0]);
+				}
+			}
+		}
+	}
+}
+
+
+//// GENE DRIVE IMPLEMENTATION RULES THAT OCCUR IN EVERY CHILD.
+1: modifyChild() { //all are females here.
+	if (parent1.tag == -1 | parent1.tag == 1){
+		child.genome2.addNewDrawnMutation(m1,0);
+		child.genome2.addNewDrawnMutation(m7,3);
+	}
+	if (parent1.tag == -2 | parent1.tag == 2){
+		child.genome2.addNewDrawnMutation(m2,0);
+		child.genome2.addNewDrawnMutation(m7,3);
+	}
+	if (parent1.tag == -3 | parent1.tag == 3){
+		child.genome2.addNewDrawnMutation(m3,0);
+		child.genome2.addNewDrawnMutation(m7,3);
+	}
+	if (parent1.tag == -4 | parent1.tag == 4){
+		child.genome2.addNewDrawnMutation(m4,0);
+		child.genome2.addNewDrawnMutation(m7,3);
+	}
+	
+	if (parent1.tag == -5 | parent1.tag == 5){
+		child.genome2.addNewDrawnMutation(m1,0);
+		child.genome2.addNewDrawnMutation(m8,3);
+	}
+	if (parent1.tag == -6 | parent1.tag == 6){
+		child.genome2.addNewDrawnMutation(m2,0);
+		child.genome2.addNewDrawnMutation(m8,3);
+	}
+	if (parent1.tag == -7 | parent1.tag == 7){
+		child.genome2.addNewDrawnMutation(m3,0);
+		child.genome2.addNewDrawnMutation(m8,3);
+	}
+	if (parent1.tag == -8 | parent1.tag == 8){
+		child.genome2.addNewDrawnMutation(m4,0);
+		child.genome2.addNewDrawnMutation(m8,3);
+	}
+	if(DISTANT_SITE){ //tagF holds the distant site genome
+		if(parent1.tagF == 1.0)
+			child.genome2.addNewDrawnMutation(m9,6);
+		if(parent1.tagF == 2.0)
+			child.genome2.addNewDrawnMutation(m10,6);
+	}
+	
+	
+	// If the drive is sex linked, force daughters to inherit father's x and sons to inherit father's y:
+	if (HOMING_DRIVE) {
+		// Apply effects that happen in the germline.
+		// First, resistance alleles form.
+		if (!MALE_ONLY_PROMOTER)
+			germline(child.genome1, parent1, GERMLINE_RESISTANCE_CUT_RATE_F);
+		germline(child.genome2, parent1, GERMLINE_RESISTANCE_CUT_RATE_M);
+		// Next, homology directed repair allows for homing to occur.
+		if (!MALE_ONLY_PROMOTER)
+			hdr(child.genome1, parent1, HOMING_PHASE_CUT_RATE_F);
+		hdr(child.genome2, parent1, HOMING_PHASE_CUT_RATE_M);
+		// Then additional resistance alleles form.
+		if (!MALE_ONLY_PROMOTER)
+			germline(child.genome1, parent1, LATE_GERMLINE_RESISTANCE_CUT_RATE_F);
+		germline(child.genome2, parent1, LATE_GERMLINE_RESISTANCE_CUT_RATE_M);
+		
+		// Apply effects that happen in the embryo.
+		if (!MALE_ONLY_PROMOTER)
+			embryo(child.genome1, child.genome2, parent1, EMBRYO_RESISTANCE_CUT_RATE_F);
+		if (child.sex == F)
+			male_deposition(child.genome1, child.genome2, parent1, EMBRYO_RESISTANCE_CUT_RATE_M);
+	} // End homing block
+	
+	// Offspring may be non viable offspring if drive
+	// is haplolethal or recesive lethal.
+	// Booleans describing presence of R2 allele:
+	res_2_c_1 = child.genome1.countOfMutationsOfType(m4) > 0;
+	res_2_c_2 = child.genome2.countOfMutationsOfType(m4) > 0;
+	dr = child.countOfMutationsOfType(m2) > 0;
+	res_2 = child.countOfMutationsOfType(m4) > 0;
+	// If drive is haplolethal:
+	// Offspring not viable if r2 on either chromosome.
+	if (HAPLOLETHAL_DRIVE & (res_2_c_1 | res_2_c_2))
+		return F;
+	// If drive is recessive lethal:
+	// Offspring not viable if r2 on both chromosomes.
+	if (RECESSIVE_LETHAL_DRIVE & res_2_c_1 & res_2_c_2)
+		return F;
+	
+	// dr homo and r2 homo cannot own their colony
+	if(sum(child.genomes.countOfMutationsOfType(m2)) == 2 | sum(child.genomes.countOfMutationsOfType(m4)) == 2)
+		return F;
+	if(dr & res_2)
+		return F;
+	if(sum(child.genomes.countOfMutationsOfType(m8)) == 2)
+		return F;
+	
+	if(subpop == p0){ //polygyne child
+		if (sum(child.genomes.countOfMutationsOfType(m7)) == 2)
+			return F;
+		child.tag = -100;
+	}
+	if(subpop == p13){ //Monogyne child
+		if (child.genome2.countOfMutationsOfType(m8) | child.genome1.countOfMutationsOfType(m8))
+			return F;
+		child.tag = 100;
+	}
+	
+	if (subpop == p0) { //Polygyne offspring
+		do {
+			new_x = parent1.x + rnorm(1, 0, POLYGYNE_MIGRATION) / SPOT;
+			new_y = parent1.y + rnorm(1, 0, POLYGYNE_MIGRATION) / SPOT;
+		}
+		while (!child.subpopulation.pointInBounds(c(new_x, new_y)));
+		child.setSpatialPosition(c(new_x, new_y));
+	}
+	if(subpop == p13){
+		do {
+			new_x = parent1.x + rnorm(1, 0, MONOGYNE_DIST) / SPOT;
+			new_y = parent1.y + rnorm(1, 0, MONOGYNE_DIST) / SPOT;
+		}
+		while (!child.subpopulation.pointInBounds(c(new_x, new_y)));
+		child.setSpatialPosition(c(new_x, new_y));
+	}
+	
+	if (child.countOfMutationsOfType(m2) > 0)
+		child.color = "red";
+	else if (child.countOfMutationsOfType(m4) >0)
+		child.color = "yellow";
+	else
+		child.color = "green";
+	
+	return T;
+}
+
+2:early(){
+	for(ind in p13.individuals){ //Monogyne child
+		if(ind.countOfMutationsOfType(m2) == 1){//Changed to polygyne
+			p0.takeMigrants(ind);
+			ind.tag = -100;
+		}
+	}
+}
+
+function(f$)somatic(o<Individual>$ ind){
+	somatic_fitness_value = 1.0;
+	has_drive = asInteger(ind.genome1.countOfMutationsOfType(m2) == NUM_GRNAS | ind.genome2.countOfMutationsOfType(m2) == NUM_GRNAS);
+	somatic_fitness_value = 1 - has_drive * (1 - SOMATIC_FITNESS_MUTLIPLIER_F);
+	return somatic_fitness_value;
+}
+
+//// RULES FOR FITNESS BASED ON GENOTYPE.
+function (f$)genotypeFitness(o<Individual>$ ind) {
+	// Representation of the value of the two chromosomes.
+	fitness_value = 1.0;
+	
+	c1_fitness = 1.0;
+	c2_fitness = 1.0;
+	
+	// Check both chromosomes for drive and type 2 resistance allele.
+	// These are the only variants that affect fitness.
+	drive_on_1 = ind.genome1.countOfMutationsOfType(m2) == NUM_GRNAS;
+	drive_on_2 = ind.genome2.countOfMutationsOfType(m2) == NUM_GRNAS;
+	res2_on_1 = ind.genome1.countOfMutationsOfType(m4) > 0;
+	res2_on_2 = ind.genome2.countOfMutationsOfType(m4) > 0;
+	wt_1 = ind.genome1.countOfMutationsOfType(m1) > 0;
+	wt_2 = ind.genome2.countOfMutationsOfType(m1) > 0;
+	
+	somatic_fitness_mult = 1;
+	if(drive_on_1 | drive_on_2)
+		somatic_fitness_mult = SOMATIC_FITNESS_MUTLIPLIER_F;
+	
+	// Check both chromosomes for the drive.
+	if(drive_on_1)
+		c1_fitness = DX_FITNESS_VALUE; //sqrt(DD_FITNESS_VALUE)
+	if(drive_on_2)
+		c2_fitness = DX_FITNESS_VALUE;
+	//Check both chromosomes for r2
+	if(res2_on_1)
+		c1_fitness = sqrt(R2_FITNESS_VALUE);
+	if(res2_on_2)
+		c2_fitness = sqrt(R2_FITNESS_VALUE);
+	
+	fitness_value = c1_fitness * c2_fitness;
+	
+	//Additional fitness multiplier for distant site drive
+	if(DISTANT_SITE){
+		distant_1 = ind.genome1.positionsOfMutationsOfType(m9);
+		distant_2 = ind.genome2.positionsOfMutationsOfType(m9);
+		distant_cost_multiplier = 1.0;
+		for(i in seqAlong(distant_1))
+			distant_cost_multiplier = distant_cost_multiplier * sqrt(OFF_TARGET_FITNESS_MULTIPLIER);
+		for(i in seqAlong(distant_2))
+			distant_cost_multiplier = distant_cost_multiplier * sqrt(OFF_TARGET_FITNESS_MULTIPLIER);
+		fitness_value = c1_fitness * c2_fitness * distant_cost_multiplier;
+	}
+	fitness_value = fitness_value *somatic_fitness_mult;
+	// Return fitness for individual with this genotype.
+	return fitness_value ;
+}
+
+//// FUNCTION FOR EVALUATING INFERTILITY CAUSED BY SUPRESSION DRIVES.
+function (logical)isInfertile(o<Individual>$ ind) {
+	dr = sum(ind.genomes.countOfMutationsOfType(m2) == NUM_GRNAS);
+	r2 = sum(ind.genomes.countOfMutationsOfType(m4) > 0);
+	if (ind.sex == "F"){
+		if (DOMINANT_STERILE_R2){
+			if(r2 >= 1)
+				return T;
+		}
+		if (RECESSIVE_FEMALE_STERILE_SUPPRESSION_DRIVE){
+			if (dr + r2 == 2)
+				return T;
+		}
+		if (HAPLOLETHAL_SUPPRESSION_DRIVE){
+			if (dr == 2)
+				return T;
+		}
+		if(DISTANT_SITE){
+			if (DISTANT_SITE_RECESSIVE_FEMALE){
+				off_target_1 = ind.genome1.positionsOfMutationsOfType(m9);
+				off_target_2 = ind.genome2.positionsOfMutationsOfType(m9);
+				for (i in seqAlong(off_target_1))
+					for (j in seqAlong(off_target_2))
+						if (i == j)
+							return T;
+			}}
+	}
+	return F;
+}
+
+function (integer)setTag(o<Individual>$ ind) {  //set tags for different species separately
+	new_tag = 0;
+	if (ind.genome1.countOfMutationsOfType(m1)){
+		if (ind.genome1.countOfMutationsOfType(m7))
+			new_tag = new_tag + 10;
+		if (ind.genome1.countOfMutationsOfType(m8))
+			new_tag = new_tag + 50;
+	}
+	if (ind.genome1.countOfMutationsOfType(m2)){
+		if (ind.genome1.countOfMutationsOfType(m7))
+			new_tag = new_tag + 20;
+		if (ind.genome1.countOfMutationsOfType(m8))
+			new_tag = new_tag + 60;
+	}
+	if (ind.genome1.countOfMutationsOfType(m3)){
+		if (ind.genome1.countOfMutationsOfType(m7))
+			new_tag = new_tag + 30;
+		if (ind.genome1.countOfMutationsOfType(m8))
+			new_tag = new_tag + 70;
+	}
+	if (ind.genome1.countOfMutationsOfType(m4)){
+		if (ind.genome1.countOfMutationsOfType(m7))
+			new_tag = new_tag + 40;
+		if (ind.genome1.countOfMutationsOfType(m8))
+			new_tag = new_tag + 80;
+	}
+	
+	if (ind.genome2.countOfMutationsOfType(m1)){
+		if (ind.genome2.countOfMutationsOfType(m7))
+			new_tag = new_tag + 1;
+		if (ind.genome2.countOfMutationsOfType(m8))
+			new_tag = new_tag + 5;
+	}
+	if (ind.genome2.countOfMutationsOfType(m2)){
+		if (ind.genome2.countOfMutationsOfType(m7))
+			new_tag = new_tag + 2;
+		if (ind.genome2.countOfMutationsOfType(m8))
+			new_tag = new_tag + 6;
+	}
+	if (ind.genome2.countOfMutationsOfType(m3)){
+		if (ind.genome2.countOfMutationsOfType(m7))
+			new_tag = new_tag + 3;
+		if (ind.genome2.countOfMutationsOfType(m8))
+			new_tag = new_tag + 7;
+	}
+	if (ind.genome2.countOfMutationsOfType(m4)){
+		if (ind.genome2.countOfMutationsOfType(m7))
+			new_tag = new_tag + 4;
+		if (ind.genome2.countOfMutationsOfType(m8))
+			new_tag = new_tag + 8;
+	}
+	return new_tag;
+}
+
+function (integer)setPolyTag(o<Individual>$ ind) {  //set tags for different species separately
+	new_tag = 0;
+	if (ind.genome1.countOfMutationsOfType(m1)){
+		if (ind.genome1.countOfMutationsOfType(m7))
+			new_tag = new_tag - 10;
+		if (ind.genome1.countOfMutationsOfType(m8))
+			new_tag = new_tag - 50;
+	}
+	if (ind.genome1.countOfMutationsOfType(m2)){
+		if (ind.genome1.countOfMutationsOfType(m7))
+			new_tag = new_tag - 20;
+		if (ind.genome1.countOfMutationsOfType(m8))
+			new_tag = new_tag - 60;
+	}
+	if (ind.genome1.countOfMutationsOfType(m3)){
+		if (ind.genome1.countOfMutationsOfType(m7))
+			new_tag = new_tag - 30;
+		if (ind.genome1.countOfMutationsOfType(m8))
+			new_tag = new_tag - 70;
+	}
+	if (ind.genome1.countOfMutationsOfType(m4)){
+		if (ind.genome1.countOfMutationsOfType(m7))
+			new_tag = new_tag - 40;
+		if (ind.genome1.countOfMutationsOfType(m8))
+			new_tag = new_tag - 80;
+	}
+	
+	if (ind.genome2.countOfMutationsOfType(m1)){
+		if (ind.genome2.countOfMutationsOfType(m7))
+			new_tag = new_tag - 1;
+		if (ind.genome2.countOfMutationsOfType(m8))
+			new_tag = new_tag - 5;
+	}
+	if (ind.genome2.countOfMutationsOfType(m2)){
+		if (ind.genome2.countOfMutationsOfType(m7))
+			new_tag = new_tag - 2;
+		if (ind.genome2.countOfMutationsOfType(m8))
+			new_tag = new_tag - 6;
+	}
+	if (ind.genome2.countOfMutationsOfType(m3)){
+		if (ind.genome2.countOfMutationsOfType(m7))
+			new_tag = new_tag - 3;
+		if (ind.genome2.countOfMutationsOfType(m8))
+			new_tag = new_tag - 7;
+	}
+	if (ind.genome2.countOfMutationsOfType(m4)){
+		if (ind.genome2.countOfMutationsOfType(m7))
+			new_tag = new_tag - 4;
+		if (ind.genome2.countOfMutationsOfType(m8))
+			new_tag = new_tag - 8;
+	}
+	return new_tag;
+}
+
+function (float)setTagF(o<Individual>$ ind){
+	new_tagF = 0.0;
+	if(ind.genome1.countOfMutationsOfType(m9))
+		new_tagF = new_tagF + 10.0;
+	if(ind.genome1.countOfMutationsOfType(m10))
+		new_tagF = new_tagF + 20.0;
+	if(ind.genome2.countOfMutationsOfType(m9))
+		new_tagF = new_tagF + 1.0;
+	if(ind.genome2.countOfMutationsOfType(m10))
+		new_tagF = new_tagF + 2.0;
+	
+	return new_tagF;
+}
+
+reproduction(NULL,"F"){
+	f1 = p1.subsetIndividuals(tag=-100);
+	f2 = p2.subsetIndividuals(tag=-100);
+	f3 = p3.subsetIndividuals(tag=-100);
+	f4 = p4.subsetIndividuals(tag=-100);
+	f5 = p5.subsetIndividuals(tag=-100);
+	f6 = p6.subsetIndividuals(tag=-100);
+	f7 = p7.subsetIndividuals(tag=-100);
+	f8 = p8.subsetIndividuals(tag=-100);
+	f9 = p9.subsetIndividuals(tag=-100);
+	f10 = p10.subsetIndividuals(tag=-100);
+	f11 = p11.subsetIndividuals(tag=-100);
+	mate = c(p2,p3,p4,p5,p6,p7,p8,p9,p10,p11);
+	Mated_F = mate.individuals[mate.individuals.tag!=-100];
+	all_Unmated_Poly_females = c(f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11);
+	for (ind in all_Unmated_Poly_females) {
+		if (isInfertile(ind)){
+			print("dd");
+			next;}
+		exert_from_mono_age2 = i1.totalOfNeighborStrengths(ind,p15);
+		exert_from_poly_age2 = i1.totalOfNeighborStrengths(ind,p2);
+		exert_from_mono_age3 = i1.totalOfNeighborStrengths(ind,p16);
+		exert_from_poly_age3 = i1.totalOfNeighborStrengths(ind,p3);
+		exert_from_mono_age4 = i1.totalOfNeighborStrengths(ind,p17);
+		exert_from_poly_age4 = i1.totalOfNeighborStrengths(ind,p4);
+		exert_from_mono_age5 = i1.totalOfNeighborStrengths(ind,p18);
+		exert_from_poly_age5 = i1.totalOfNeighborStrengths(ind,p5);
+		exert_from_mono_age6 = i1.totalOfNeighborStrengths(ind,p19);
+		exert_from_poly_age6 = i1.totalOfNeighborStrengths(ind,p6);
+		exert_from_mono_age7 = i1.totalOfNeighborStrengths(ind,p20);
+		exert_from_poly_age7 = i1.totalOfNeighborStrengths(ind,p7);
+		exert_from_age2= exert_from_mono_age2+exert_from_poly_age2*POLYGYNE_MALE_RATE;
+		exert_from_age3= exert_from_mono_age3+exert_from_poly_age3*POLYGYNE_MALE_RATE;
+		exert_from_age4= exert_from_mono_age4+exert_from_poly_age4*POLYGYNE_MALE_RATE;
+		exert_from_age5= exert_from_mono_age5+exert_from_poly_age5*POLYGYNE_MALE_RATE;
+		exert_from_age6= exert_from_mono_age6+exert_from_poly_age6*POLYGYNE_MALE_RATE;
+		exert_from_age7= exert_from_mono_age7+exert_from_poly_age7*POLYGYNE_MALE_RATE;
+		exert_from_age8 = i1.totalOfNeighborStrengths(ind,p8);
+		exert_from_age9 = i1.totalOfNeighborStrengths(ind,p9);
+		exert_from_age10 = i1.totalOfNeighborStrengths(ind,p10);
+		exert_from_age_mature = i1.totalOfNeighborStrengths(ind,p11);
+		exert_from_age8=exert_from_age8*POLYGYNE_MALE_RATE;
+		exert_from_age9=exert_from_age9*POLYGYNE_MALE_RATE;
+		exert_from_age10=exert_from_age10*POLYGYNE_MALE_RATE;
+		exert_from_age_mature=exert_from_age_mature*POLYGYNE_MALE_RATE;
+		
+		male_from_mature = exert_from_age_mature*340000/(exert_from_age_mature*340000 + (exert_from_age10*339949.2858 + exert_from_age9 * 339813.9885 + exert_from_age8 * 339318.464 + exert_from_age7 * 337513 +
+			exert_from_age6 * 331048+ exert_from_age5* 309308 + exert_from_age4 * 249250 + exert_from_age3 * 145550 + exert_from_age2 *57607));
+		
+		male_from_p10 = exert_from_age10*339949.2858/(exert_from_age10*339949.2858 + (exert_from_age9 * 339813.9885 + exert_from_age8 * 339318.464 + exert_from_age7 * 337513 +
+			exert_from_age6 * 331048+ exert_from_age5* 309308 + exert_from_age4 * 249250 + exert_from_age3 * 145550 + exert_from_age2 *57607));
+		male_from_p9 = exert_from_age9 * 339813.9885/(exert_from_age9 * 339813.9885 + (exert_from_age8 * 339318.464 + exert_from_age7 * 337513 +
+			exert_from_age6 * 331048+ exert_from_age5* 309308 + exert_from_age4 * 249250 + exert_from_age3 * 145550 + exert_from_age2 *57607));
+		male_from_p8 = exert_from_age8 * 339318.464/(exert_from_age8 * 339318.464+(exert_from_age7 * 337513 +
+			exert_from_age6 * 331048+ exert_from_age5* 309308 + exert_from_age4 * 249250 + exert_from_age3 * 145550 + exert_from_age2 *57607));
+		male_from_p7 = exert_from_age7*168756/(exert_from_age7*168756 + (exert_from_age6*165524 + exert_from_age5*154654 + exert_from_age4*124625 + exert_from_age3 * 72775 + exert_from_age2*28804));
+		male_from_p6 = exert_from_age6*165524/(exert_from_age6*165524 + (exert_from_age5*154654 + exert_from_age4*124625 + exert_from_age3 * 72775 + exert_from_age2*28804));
+		male_from_p5 = exert_from_age5*154654/(exert_from_age5*154654 + (exert_from_age4*124625 + exert_from_age3 * 72775 + exert_from_age2*28804));
+		male_from_p4 = exert_from_age4*124625/(exert_from_age4*124625 + (exert_from_age3 * 72775 + exert_from_age2*28804));
+		male_from_p3 = exert_from_age3 * 72775/(exert_from_age3 * 72775 + exert_from_age2*28804);
+		
+		if(runif(1) < male_from_mature){
+			mature_male = i1.nearestNeighbors(ind, p11.individualCount, p11);
+			if(size(mature_male) > 0){
+				attempt_no = 0;
+				found_mate = F;
+				while(1){
+					mate_no = 0;
+					if(size(mature_male) > 1)
+						mate_no = rdunif(1, max=size(mature_male)-1);
+					selected_mate = mature_male[mate_no];
+					mate_attractiveness = genotypeFitness(selected_mate);
+					if(selected_mate.countOfMutationsOfType(m8))
+						mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+					if (runif(1) < mate_attractiveness) {
+						found_mate = T;
+						break; //select this mate.
+					}
+					attempt_no = attempt_no + 1;
+					if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+						break;
+				}
+				if(found_mate){
+					ind.tag = setPolyTag(selected_mate);
+					// Actual mate genome:
+					pa1 = asInteger(ind.tag/10);
+					pa2 = ind.tag - 10 * pa1;
+					if(runif(1)<0.5)
+						paternal = pa1;
+					else
+						paternal = pa2;
+					if(ind.tag == -12 | ind.tag == -21 | ind.tag == -56 | ind.tag == -65 | ind.tag == -16 | ind.tag == -61 | ind.tag == -52 | ind.tag == -25){
+						if(paternal == -1 | paternal == -5){
+							resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+							if (runif(1) < DRIVE_CONVERSION){
+								if(paternal == -1)
+									paternal = -2;
+								else
+									paternal = -6;
+							}
+							else if(runif(1) < resistance){
+								if(paternal == -1)
+									paternal = -4;
+								else
+									paternal = -8;
+							}
+							else{
+								if(paternal == -1)
+									paternal = -1;
+								else
+									paternal = -5;
+							}
+						}
+					}
+					ind.tag = paternal;
+				}
+			}
+		}
+		else if(runif(1) < male_from_p10){
+			p10_male = i1.nearestNeighbors(ind, p10.individualCount, p10);
+			if(size(p10_male) > 0){
+				attempt_no = 0;
+				found_mate = F;
+				while(1){
+					mate_no = 0;
+					if(size(p10_male) > 1)
+						mate_no = rdunif(1, max=size(p10_male)-1);
+					selected_mate = p10_male[mate_no];
+					mate_attractiveness = genotypeFitness(selected_mate);
+					if(selected_mate.countOfMutationsOfType(m8))
+						mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+					if (runif(1) < mate_attractiveness) {
+						found_mate = T;
+						break; //select this mate.
+					}
+					attempt_no = attempt_no + 1;
+					if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+						break;
+				}
+				if(found_mate){
+					ind.tag = setPolyTag(selected_mate);
+					// Actual mate genome:
+					pa1 = asInteger(ind.tag/10);
+					pa2 = ind.tag - 10 * pa1;
+					if(runif(1)<0.5)
+						paternal = pa1;
+					else
+						paternal = pa2;
+					
+					if(ind.tag == -12 | ind.tag == -21 | ind.tag == -56 | ind.tag == -65 | ind.tag == -16 | ind.tag == -61 | ind.tag == -52 | ind.tag == -25){
+						if(paternal == -1 | paternal == -5){
+							resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+							if (runif(1) < DRIVE_CONVERSION){
+								if(paternal == -1)
+									paternal = -2;
+								else
+									paternal = -6;
+							}
+							else if(runif(1) < resistance){
+								if(paternal == -1)
+									paternal = -4;
+								else
+									paternal = -8;
+							}
+							else{
+								if(paternal == -1)
+									paternal = -1;
+								else
+									paternal = -5;
+							}
+						}
+					}
+					ind.tag = paternal;
+				}
+			}
+		}
+		else if(runif(1) < male_from_p9){
+			p9_male = i1.nearestNeighbors(ind, p9.individualCount, p9);
+			if(size(p9_male) > 0){
+				attempt_no = 0;
+				found_mate = F;
+				while(1){
+					mate_no = 0;
+					if(size(p9_male) > 1)
+						mate_no = rdunif(1, max=size(p9_male)-1);
+					selected_mate = p9_male[mate_no];
+					mate_attractiveness = genotypeFitness(selected_mate);
+					if(selected_mate.countOfMutationsOfType(m8))
+						mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+					if (runif(1) < mate_attractiveness) {
+						found_mate = T;
+						break; //select this mate.
+					}
+					attempt_no = attempt_no + 1;
+					if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+						break;
+				}
+				if(found_mate){
+					ind.tag = setPolyTag(selected_mate);
+					// Actual mate genome:
+					pa1 = asInteger(ind.tag/10);
+					pa2 = ind.tag - 10 * pa1;
+					if(runif(1)<0.5)
+						paternal = pa1;
+					else
+						paternal = pa2;
+					
+					if(ind.tag == -12 | ind.tag == -21 | ind.tag == -56 | ind.tag == -65 | ind.tag == -16 | ind.tag == -61 | ind.tag == -52 | ind.tag == -25){
+						if(paternal == -1 | paternal == -5){
+							resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+							if (runif(1) < DRIVE_CONVERSION){
+								if(paternal == -1)
+									paternal = -2;
+								else
+									paternal = -6;
+							}
+							else if(runif(1) < resistance){
+								if(paternal == -1)
+									paternal = -4;
+								else
+									paternal = -8;
+							}
+							else{
+								if(paternal == -1)
+									paternal = -1;
+								else
+									paternal = -5;
+							}
+						}
+					}
+					ind.tag = paternal;
+				}
+			}
+		}
+		else if(runif(1) < male_from_p8){
+			p8_male = i1.nearestNeighbors(ind, p8.individualCount, p8);
+			if(size(p8_male) > 0){
+				attempt_no = 0;
+				found_mate = F;
+				while(1){
+					mate_no = 0;
+					if(size(p8_male) > 1)
+						mate_no = rdunif(1, max=size(p8_male)-1);
+					selected_mate = p8_male[mate_no];
+					mate_attractiveness = genotypeFitness(selected_mate);
+					if(selected_mate.countOfMutationsOfType(m8))
+						mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+					if (runif(1) < mate_attractiveness) {
+						found_mate = T;
+						break; //select this mate.
+					}
+					attempt_no = attempt_no + 1;
+					if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+						break;
+				}
+				if(found_mate){
+					ind.tag = setPolyTag(selected_mate);
+					// Actual mate genome:
+					pa1 = asInteger(ind.tag/10);
+					pa2 = ind.tag - 10 * pa1;
+					if(runif(1)<0.5)
+						paternal = pa1;
+					else
+						paternal = pa2;
+					
+					if(ind.tag == -12 | ind.tag == -21 | ind.tag == -56 | ind.tag == -65 | ind.tag == -16 | ind.tag == -61 | ind.tag == -52 | ind.tag == -25){
+						if(paternal == -1 | paternal == -5){
+							resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+							if (runif(1) < DRIVE_CONVERSION){
+								if(paternal == -1)
+									paternal = -2;
+								else
+									paternal = -6;
+							}
+							else if(runif(1) < resistance){
+								if(paternal == -1)
+									paternal = -4;
+								else
+									paternal = -8;
+							}
+							else{
+								if(paternal == -1)
+									paternal = -1;
+								else
+									paternal = -5;
+							}
+						}
+					}
+					ind.tag = paternal;
+				}
+			}
+		}
+		else if(runif(1) < male_from_p7){
+			p7_poly_male = i1.nearestNeighbors(ind, p7.individualCount, p7);
+			p7_mono_male = i1.nearestNeighbors(ind, p20.individualCount, p20);
+			p7_male = c(p7_poly_male,p7_mono_male);
+			if(size(p7_male) > 0){
+				attempt_no = 0;
+				found_mate = F;
+				while(1){
+					mate_no = 0;
+					if(size(p7_male) > 1)
+						mate_no = rdunif(1, max=size(p7_male)-1);
+					selected_mate = p7_male[mate_no];
+					mate_attractiveness = genotypeFitness(selected_mate);
+					if(selected_mate.countOfMutationsOfType(m8))
+						mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+					if (runif(1) < mate_attractiveness) {
+						found_mate = T;
+						break; //select this mate.
+					}
+					attempt_no = attempt_no + 1;
+					if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+						break;
+				}
+				if(found_mate){
+					ind.tag = setPolyTag(selected_mate);
+					// Actual mate genome:
+					pa1 = asInteger(ind.tag/10);
+					pa2 = ind.tag - 10 * pa1;
+					if(runif(1)<0.5)
+						paternal = pa1;
+					else
+						paternal = pa2;
+					
+					if(ind.tag == -12 | ind.tag == -21 | ind.tag == -56 | ind.tag == -65 | ind.tag == -16 | ind.tag == -61 | ind.tag == -52 | ind.tag == -25){
+						if(paternal == -1 | paternal == -5){
+							resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+							if (runif(1) < DRIVE_CONVERSION){
+								if(paternal == -1)
+									paternal = -2;
+								else
+									paternal = -6;
+							}
+							else if(runif(1) < resistance){
+								if(paternal == -1)
+									paternal = -4;
+								else
+									paternal = -8;
+							}
+							else{
+								if(paternal == -1)
+									paternal = -1;
+								else
+									paternal = -5;
+							}
+						}
+					}
+					ind.tag = paternal;
+				}
+			}
+		}
+		else if(runif(1) < male_from_p6){
+			p6_poly_male = i1.nearestNeighbors(ind, p6.individualCount, p6);
+			p6_mono_male = i1.nearestNeighbors(ind, p19.individualCount, p19);
+			p6_male = c(p6_poly_male,p6_mono_male);
+			if(size(p6_male) > 0){
+				attempt_no = 0;
+				found_mate = F;
+				while(1){
+					mate_no = 0;
+					if(size(p6_male) > 1)
+						mate_no = rdunif(1, max=size(p6_male)-1);
+					selected_mate = p6_male[mate_no];
+					mate_attractiveness = genotypeFitness(selected_mate);
+					if(selected_mate.countOfMutationsOfType(m8))
+						mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+					if (runif(1) < mate_attractiveness) {
+						found_mate = T;
+						break; //select this mate.
+					}
+					attempt_no = attempt_no + 1;
+					if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+						break;
+				}
+				if(found_mate){
+					ind.tag = setPolyTag(selected_mate);
+					
+					// Actual mate genome:
+					pa1 = asInteger(ind.tag/10);
+					pa2 = ind.tag - 10 * pa1;
+					if(runif(1)<0.5)
+						paternal = pa1;
+					else
+						paternal = pa2;
+					
+					if(ind.tag == -12 | ind.tag == -21 | ind.tag == -56 | ind.tag == -65 | ind.tag == -16 | ind.tag == -61 | ind.tag == -52 | ind.tag == -25){
+						if(paternal == -1 | paternal == -5){
+							resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+							if (runif(1) < DRIVE_CONVERSION){
+								if(paternal == -1)
+									paternal = -2;
+								else
+									paternal = -6;
+							}
+							else if(runif(1) < resistance){
+								if(paternal == -1)
+									paternal = -4;
+								else
+									paternal = -8;
+							}
+							else{
+								if(paternal == -1)
+									paternal = -1;
+								else
+									paternal = -5;
+							}
+						}
+					}
+					ind.tag = paternal;
+				}
+			}
+		}
+		else if(runif(1) < male_from_p5){
+			p5_poly_male = i1.nearestNeighbors(ind, p5.individualCount, p5);
+			p5_mono_male = i1.nearestNeighbors(ind, p18.individualCount, p18);
+			p5_male = c(p5_poly_male,p5_mono_male);
+			if(size(p5_male) > 0){
+				attempt_no = 0;
+				found_mate = F;
+				while(1){
+					mate_no = 0;
+					if(size(p5_male) > 1)
+						mate_no = rdunif(1, max=size(p5_male)-1);
+					selected_mate = p5_male[mate_no];
+					mate_attractiveness = genotypeFitness(selected_mate);
+					if(selected_mate.countOfMutationsOfType(m8))
+						mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+					if (runif(1) < mate_attractiveness) {
+						found_mate = T;
+						break; //select this mate.
+					}
+					attempt_no = attempt_no + 1;
+					if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+						break;
+				}
+				if(found_mate){
+					ind.tag = setPolyTag(selected_mate);
+					
+					// Actual mate genome:
+					pa1 = asInteger(ind.tag/10);
+					pa2 = ind.tag - 10 * pa1;
+					if(runif(1)<0.5)
+						paternal = pa1;
+					else
+						paternal = pa2;
+					
+					if(ind.tag == -12 | ind.tag == -21 | ind.tag == -56 | ind.tag == -65 | ind.tag == -16 | ind.tag == -61 | ind.tag == -52 | ind.tag == -25){
+						if(paternal == -1 | paternal == -5){
+							resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+							if (runif(1) < DRIVE_CONVERSION){
+								if(paternal == -1)
+									paternal = -2;
+								else
+									paternal = -6;
+							}
+							else if(runif(1) < resistance){
+								if(paternal == -1)
+									paternal = -4;
+								else
+									paternal = -8;
+							}
+							else{
+								if(paternal == -1)
+									paternal = -1;
+								else
+									paternal = -5;
+							}
+						}
+					}
+					ind.tag = paternal;
+				}
+			}
+		}
+		else if(runif(1) < male_from_p4){
+			p4_poly_male = i1.nearestNeighbors(ind, p4.individualCount, p4);
+			p4_mono_male = i1.nearestNeighbors(ind, p17.individualCount, p17);
+			p4_male = c(p4_poly_male,p4_mono_male);
+			if(size(p4_male) > 0){
+				attempt_no = 0;
+				found_mate = F;
+				while(1){
+					mate_no = 0;
+					if(size(p4_male) > 1)
+						mate_no = rdunif(1, max=size(p4_male)-1);
+					selected_mate = p4_male[mate_no];
+					mate_attractiveness = genotypeFitness(selected_mate);
+					if(selected_mate.countOfMutationsOfType(m8))
+						mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+					if (runif(1) < mate_attractiveness) {
+						found_mate = T;
+						break; //select this mate.
+					}
+					attempt_no = attempt_no + 1;
+					if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+						break;
+				}
+				if(found_mate){
+					ind.tag = setPolyTag(selected_mate);
+					
+					// Actual mate genome:
+					pa1 = asInteger(ind.tag/10);
+					pa2 = ind.tag - 10 * pa1;
+					if(runif(1)<0.5)
+						paternal = pa1;
+					else
+						paternal = pa2;
+					
+					if(ind.tag == -12 | ind.tag == -21 | ind.tag == -56 | ind.tag == -65 | ind.tag == -16 | ind.tag == -61 | ind.tag == -52 | ind.tag == -25){
+						if(paternal == -1 | paternal == -5){
+							resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+							if (runif(1) < DRIVE_CONVERSION){
+								if(paternal == -1)
+									paternal = -2;
+								else
+									paternal = -6;
+							}
+							else if(runif(1) < resistance){
+								if(paternal == -1)
+									paternal = -4;
+								else
+									paternal = -8;
+							}
+							else{
+								if(paternal == -1)
+									paternal = -1;
+								else
+									paternal = -5;
+							}
+						}
+					}
+					ind.tag = paternal;
+				}
+			}
+		}
+		else if(runif(1) < male_from_p3){
+			p3_poly_male = i1.nearestNeighbors(ind, p3.individualCount, p3);
+			p3_mono_male = i1.nearestNeighbors(ind, p16.individualCount, p16);
+			p3_male = c(p3_poly_male,p3_mono_male);
+			if(size(p3_male) > 0){
+				attempt_no = 0;
+				found_mate = F;
+				while(1){
+					mate_no = 0;
+					if(size(p3_male) > 1)
+						mate_no = rdunif(1, max=size(p3_male)-1);
+					selected_mate = p3_male[mate_no];
+					mate_attractiveness = genotypeFitness(selected_mate);
+					if(selected_mate.countOfMutationsOfType(m8))
+						mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+					if (runif(1) < mate_attractiveness) {
+						found_mate = T;
+						break; //select this mate.
+					}
+					attempt_no = attempt_no + 1;
+					if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+						break;
+				}
+				if(found_mate){
+					ind.tag = setPolyTag(selected_mate);
+					
+					// Actual mate genome:
+					pa1 = asInteger(ind.tag/10);
+					pa2 = ind.tag - 10 * pa1;
+					if(runif(1)<0.5)
+						paternal = pa1;
+					else
+						paternal = pa2;
+					
+					if(ind.tag == -12 | ind.tag == -21 | ind.tag == -56 | ind.tag == -65 | ind.tag == -16 | ind.tag == -61 | ind.tag == -52 | ind.tag == -25){
+						if(paternal == -1 | paternal == -5){
+							resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+							if (runif(1) < DRIVE_CONVERSION){
+								if(paternal == -1)
+									paternal = -2;
+								else
+									paternal = -6;
+							}
+							else if(runif(1) < resistance){
+								if(paternal == -1)
+									paternal = -4;
+								else
+									paternal = -8;
+							}
+							else{
+								if(paternal == -1)
+									paternal = -1;
+								else
+									paternal = -5;
+							}
+						}
+					}
+					ind.tag = paternal;
+				}
+			}
+		}
+		else{
+			p2_poly_male = i1.nearestNeighbors(ind, p2.individualCount, p2);
+			p2_mono_male = i1.nearestNeighbors(ind, p15.individualCount, p15);
+			p2_male = c(p2_poly_male,p2_mono_male);
+			if(size(p2_male) > 0){
+				attempt_no = 0;
+				found_mate = F;
+				while(1){
+					mate_no = 0;
+					if(size(p2_male) > 1)
+						mate_no = rdunif(1, max=size(p2_male)-1);
+					selected_mate = p2_male[mate_no];
+					mate_attractiveness = genotypeFitness(selected_mate);
+					if(selected_mate.countOfMutationsOfType(m8))
+						mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+					if (runif(1) < mate_attractiveness) {
+						found_mate = T;
+						break; //select this mate.
+					}
+					attempt_no = attempt_no + 1;
+					if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+						break;
+				}
+				if(found_mate){
+					ind.tag = setPolyTag(selected_mate);
+					
+					// Actual mate genome:
+					pa1 = asInteger(ind.tag/10);
+					pa2 = ind.tag - 10 * pa1;
+					if(runif(1)<0.5)
+						paternal = pa1;
+					else
+						paternal = pa2;
+					
+					if(ind.tag == -12 | ind.tag == -21 | ind.tag == -56 | ind.tag == -65 | ind.tag == -16 | ind.tag == -61 | ind.tag == -52 | ind.tag == -25){
+						if(paternal == -1 | paternal == -5){
+							resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+							if (runif(1) < DRIVE_CONVERSION){
+								if(paternal == -1)
+									paternal = -2;
+								else
+									paternal = -6;
+							}
+							else if(runif(1) < resistance){
+								if(paternal == -1)
+									paternal = -4;
+								else
+									paternal = -8;
+							}
+							else{
+								if(paternal == -1)
+									paternal = -1;
+								else
+									paternal = -5;
+							}
+						}
+					}
+					ind.tag = paternal;
+				}
+			}
+		}
+		if(ind.tag !=-100){
+			if(ind.age == 1)
+				num_offspring = 0;
+			else if (ind.age == 2)
+				num_offspring = asInteger(rpois(1, 1.19694*POLY_REPRODUCTION_FACTOR*somatic(ind)));
+			else if (ind.age == 3)
+				num_offspring = asInteger(rpois(1, 3.024193*POLY_REPRODUCTION_FACTOR*somatic(ind)));
+			else if (ind.age == 4)
+				num_offspring = asInteger(rpois(1, 5.178839*POLY_REPRODUCTION_FACTOR*somatic(ind)));
+			else if (ind.age == 5)
+				num_offspring = asInteger(rpois(1, 6.426706*POLY_REPRODUCTION_FACTOR*somatic(ind)));
+			else if (ind.age == 6)
+				num_offspring = asInteger(rpois(1, 6.878413*POLY_REPRODUCTION_FACTOR*somatic(ind)));
+			else if (ind.age == 7)
+				num_offspring = asInteger(rpois(1, 7.012741*POLY_REPRODUCTION_FACTOR*somatic(ind)));
+			else if (ind.age == 8)
+				num_offspring = asInteger(rpois(1, 7.050254*POLY_REPRODUCTION_FACTOR*somatic(ind)));
+			else
+				num_offspring = asInteger(rpois(1, 7.064415*POLY_REPRODUCTION_FACTOR*somatic(ind)));
+			
+			if(num_offspring < 0)
+				num_offspring = 0;
+			else
+				num_offspring = asInteger(num_offspring);
+			for(i in seqLen(num_offspring))
+				offspring = p0.addCrossed(ind,sample(p12.individuals,1),"F");
+		}
+	}
+	
+	//Produce half as many new colonies as monogyne
+	for (ind in Mated_F){
+		//if(ind.age == 1)
+		//num_offspring = 0;
+		if (ind.age == 2)
+				num_offspring = asInteger(rpois(1, 1.19694*POLY_REPRODUCTION_FACTOR*somatic(ind)));
+			else if (ind.age == 3)
+				num_offspring = asInteger(rpois(1, 3.024193*POLY_REPRODUCTION_FACTOR*somatic(ind)));
+			else if (ind.age == 4)
+				num_offspring = asInteger(rpois(1, 5.178839*POLY_REPRODUCTION_FACTOR*somatic(ind)));
+			else if (ind.age == 5)
+				num_offspring = asInteger(rpois(1, 6.426706*POLY_REPRODUCTION_FACTOR*somatic(ind)));
+			else if (ind.age == 6)
+				num_offspring = asInteger(rpois(1, 6.878413*POLY_REPRODUCTION_FACTOR*somatic(ind)));
+			else if (ind.age == 7)
+				num_offspring = asInteger(rpois(1, 7.012741*POLY_REPRODUCTION_FACTOR*somatic(ind)));
+			else if (ind.age == 8)
+				num_offspring = asInteger(rpois(1, 7.050254*POLY_REPRODUCTION_FACTOR*somatic(ind)));
+			else
+				num_offspring = asInteger(rpois(1, 7.064415*POLY_REPRODUCTION_FACTOR*somatic(ind)));
+
+		if(num_offspring < 0)
+			num_offspring = 0;
+		else
+			num_offspring = asInteger(num_offspring);
+		//print(num_offspring);
+		for(i in seqLen(num_offspring))
+			offspring = p0.addCrossed(ind,sample(p12.individuals,1),"F");
+	}
+	self.active = 0;
+}
+
+
+
+reproduction (NULL,"F"){
+	all_females = c(p14.individuals,p15.individuals,p16.individuals,p17.individuals,p18.individuals,p19.individuals,p20.individuals);
+	for (ind in all_females) {
+		if (isInfertile(ind))
+			next;
+		exert_from_mono_age2 = i1.totalOfNeighborStrengths(ind,p15);
+		exert_from_poly_age2 = i1.totalOfNeighborStrengths(ind,p2);
+		exert_from_mono_age3 = i1.totalOfNeighborStrengths(ind,p16);
+		exert_from_poly_age3 = i1.totalOfNeighborStrengths(ind,p3);
+		exert_from_mono_age4 = i1.totalOfNeighborStrengths(ind,p17);
+		exert_from_poly_age4 = i1.totalOfNeighborStrengths(ind,p4);
+		exert_from_mono_age5 = i1.totalOfNeighborStrengths(ind,p18);
+		exert_from_poly_age5 = i1.totalOfNeighborStrengths(ind,p5);
+		exert_from_mono_age6 = i1.totalOfNeighborStrengths(ind,p19);
+		exert_from_poly_age6 = i1.totalOfNeighborStrengths(ind,p6);
+		exert_from_mono_age7 = i1.totalOfNeighborStrengths(ind,p20);
+		exert_from_poly_age7 = i1.totalOfNeighborStrengths(ind,p7);
+		exert_from_age2= exert_from_mono_age2+exert_from_poly_age2;
+		exert_from_age3= exert_from_mono_age3+exert_from_poly_age3*POLYGYNE_MALE_RATE;
+		exert_from_age4= exert_from_mono_age4+exert_from_poly_age4*POLYGYNE_MALE_RATE;
+		exert_from_age5= exert_from_mono_age5+exert_from_poly_age5*POLYGYNE_MALE_RATE;
+		exert_from_age6= exert_from_mono_age6+exert_from_poly_age6*POLYGYNE_MALE_RATE;
+		exert_from_age7= exert_from_mono_age7+exert_from_poly_age7*POLYGYNE_MALE_RATE;
+		exert_from_age8 = i1.totalOfNeighborStrengths(ind,p8);
+		exert_from_age9 = i1.totalOfNeighborStrengths(ind,p9);
+		exert_from_age10 = i1.totalOfNeighborStrengths(ind,p10);
+		exert_from_age_mature = i1.totalOfNeighborStrengths(ind,p11);
+		
+		exert_from_age8 = exert_from_age8*POLYGYNE_MALE_RATE;
+		exert_from_age9 = exert_from_age9*POLYGYNE_MALE_RATE;
+		exert_from_age10 = exert_from_age10*POLYGYNE_MALE_RATE;
+		exert_from_age_mature = exert_from_age_mature*POLYGYNE_MALE_RATE;
+		
+		male_from_mature = exert_from_age_mature*340000/(exert_from_age_mature*340000 + (exert_from_age10*339949.2858 + exert_from_age9 * 339813.9885 + exert_from_age8 * 339318.464 + exert_from_age7 * 337513 + exert_from_age6 * 331048+ exert_from_age5* 309308 + exert_from_age4 * 249250 + exert_from_age3 * 145550 + exert_from_age2 *57607));
+		male_from_p10 = exert_from_age10*339949.2858/(exert_from_age10*339949.2858 + (exert_from_age9 * 339813.9885 + exert_from_age8 * 339318.464 + exert_from_age7 * 337513 +
+			exert_from_age6 * 331048+ exert_from_age5* 309308 + exert_from_age4 * 249250 + exert_from_age3 * 145550 + exert_from_age2 *57607));
+		male_from_p9 = exert_from_age9 * 339813.9885/(exert_from_age9 * 339813.9885 + (exert_from_age8 * 339318.464 + exert_from_age7 * 337513 +
+			exert_from_age6 * 331048+ exert_from_age5* 309308 + exert_from_age4 * 249250 + exert_from_age3 * 145550 + exert_from_age2 *57607));
+		male_from_p8 = exert_from_age8 * 339318.464/(exert_from_age8 * 339318.464+(exert_from_age7 * 337513 +
+			exert_from_age6 * 331048+ exert_from_age5* 309308 + exert_from_age4 * 249250 + exert_from_age3 * 145550 + exert_from_age2 *57607));
+		male_from_p7 = exert_from_age7*168756/(exert_from_age7*168756 + (exert_from_age6*165524 + exert_from_age5*154654 + exert_from_age4*124625 + exert_from_age3 * 72775 + exert_from_age2*28804));
+		male_from_p6 = exert_from_age6*165524/(exert_from_age6*165524 + (exert_from_age5*154654 + exert_from_age4*124625 + exert_from_age3 * 72775 + exert_from_age2*28804));
+		male_from_p5 = exert_from_age5*154654/(exert_from_age5*154654 + (exert_from_age4*124625 + exert_from_age3 * 72775 + exert_from_age2*28804));
+		male_from_p4 = exert_from_age4*124625/(exert_from_age4*124625 + (exert_from_age3 * 72775 + exert_from_age2*28804));
+		male_from_p3 = exert_from_age3 * 72775/(exert_from_age3 * 72775 + exert_from_age2*28804);
+		
+		
+		if(ind.tag == 100){ //Unmated ind
+			if(runif(1) < male_from_mature){ //Males must from polygyne
+				mature_poly_male = i1.nearestNeighbors(ind, p11.individualCount, p11);
+				if(size(mature_poly_male) > 0){
+					attempt_no = 0;
+					found_mate = F;
+					while(1){
+						mate_no = 0;
+						if(size(mature_poly_male) > 1)
+							mate_no = rdunif(1, max=size(mature_poly_male)-1);
+						selected_mate = mature_poly_male[mate_no];
+						mate_attractiveness = genotypeFitness(selected_mate);
+						if(selected_mate.countOfMutationsOfType(m8))
+						mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+						if (runif(1) < mate_attractiveness) {
+							found_mate = T;
+							break; //select this mate.
+						}
+						attempt_no = attempt_no + 1;
+						if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+							break;
+					}
+					if(found_mate){
+						ind.tag =setTag(selected_mate);
+						pa1 = asInteger(ind.tag/10);
+						pa2 = ind.tag - 10 * pa1;
+						if(pa1 == 1 | pa1 == 2 | pa1 == 3 | pa1 == 4){
+							if(pa2 == 5 | pa2 == 6 | pa2 == 7 | pa2 == 8)
+								paternal = pa1;
+							else{
+								if(runif(1)<0.5)
+									paternal = pa1;
+								else
+									paternal = pa2;
+							}
+						}else
+							paternal = pa2;
+						
+						if(DISTANT_SITE){
+							ind.tagF = setTagF(selected_mate);
+							pa3 = asFloat(asInteger(ind.tagF/10));
+							pa4 = ind.tagF - 10 * pa3;
+							if(runif(1) < 0.5)
+								paternal_F = pa3;
+							else
+								paternal_F = pa4;
+							if(paternal == 4)
+								next;
+						}
+						
+						
+						if(ind.tag == 12 | ind.tag == 21 | ind.tag == 16 | ind.tag == 61){
+							if(paternal == 1){
+								resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+								if (runif(1) < DRIVE_CONVERSION)
+									paternal = 2;
+								else if(runif(1) < resistance)
+									paternal = 4;
+								else
+									paternal = 1;
+							}
+						}
+						ind.tag = paternal;
+						if(DISTANT_SITE)
+							ind.tagF = paternal_F;
+					}
+				}
+			}
+			else if(runif(1) < male_from_p10){
+				p10_poly_male = i1.nearestNeighbors(ind, p10.individualCount, p10);
+				if(size(p10_poly_male) > 0){
+					attempt_no = 0;
+					found_mate = F;
+					while(1){
+						mate_no = 0;
+						if(size(p10_poly_male) > 1)
+							mate_no = rdunif(1, max=size(p10_poly_male)-1);
+						selected_mate = p10_poly_male[mate_no];
+						mate_attractiveness = genotypeFitness(selected_mate);
+						if(selected_mate.countOfMutationsOfType(m8))
+							mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+						if (runif(1) < mate_attractiveness) {
+							found_mate = T;
+							break; //select this mate.
+						}
+						attempt_no = attempt_no + 1;
+						if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+							break;
+					}
+					if(found_mate){
+						ind.tag =setTag(selected_mate);
+						pa1 = asInteger(ind.tag/10);
+						pa2 = ind.tag - 10 * pa1;
+						if(pa1 == 1 | pa1 == 2 | pa1 == 3 | pa1 == 4){
+							if(pa2 == 5 | pa2 == 6 | pa2 == 7 | pa2 == 8)
+								paternal = pa1;
+							else{
+								if(runif(1)<0.5)
+									paternal = pa1;
+								else
+									paternal = pa2;
+							}
+						}else
+							paternal = pa2;
+						
+						if(DISTANT_SITE){
+							ind.tagF = setTagF(selected_mate);
+							pa3 = asFloat(asInteger(ind.tagF/10));
+							pa4 = ind.tagF - 10 * pa3;
+							if(runif(1) < 0.5)
+								paternal_F = pa3;
+							else
+								paternal_F = pa4;
+							if(paternal == 4)
+								next;
+						}
+						
+						
+						if(ind.tag == 12 | ind.tag == 21 | ind.tag == 16 | ind.tag == 61){
+							if(paternal == 1){
+								resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+								if (runif(1) < DRIVE_CONVERSION)
+									paternal = 2;
+								else if(runif(1) < resistance)
+									paternal = 4;
+								else
+									paternal = 1;
+							}
+						}
+						
+						ind.tag = paternal;
+						if(DISTANT_SITE)
+							ind.tagF = paternal_F;
+					}
+				}
+			}
+			else if(runif(1) < male_from_p9){
+				p9_poly_male = i1.nearestNeighbors(ind, p9.individualCount, p9);
+				if(size(p9_poly_male) > 0){
+					attempt_no = 0;
+					found_mate = F;
+					while(1){
+						mate_no = 0;
+						if(size(p9_poly_male) > 1)
+							mate_no = rdunif(1, max=size(p9_poly_male)-1);
+						selected_mate = p9_poly_male[mate_no];
+						mate_attractiveness = genotypeFitness(selected_mate);
+						if(selected_mate.countOfMutationsOfType(m8))
+							mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+						if (runif(1) < mate_attractiveness) {
+							found_mate = T;
+							break; //select this mate.
+						}
+						attempt_no = attempt_no + 1;
+						if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+							break;
+					}
+					if(found_mate){
+						ind.tag =setTag(selected_mate);
+						pa1 = asInteger(ind.tag/10);
+						pa2 = ind.tag - 10 * pa1;
+						if(pa1 == 1 | pa1 == 2 | pa1 == 3 | pa1 == 4){
+							if(pa2 == 5 | pa2 == 6 | pa2 == 7 | pa2 == 8)
+								paternal = pa1;
+							else{
+								if(runif(1)<0.5)
+									paternal = pa1;
+								else
+									paternal = pa2;
+							}
+						}else
+							paternal = pa2;
+						
+						if(DISTANT_SITE){
+							ind.tagF = setTagF(selected_mate);
+							pa3 = asFloat(asInteger(ind.tagF/10));
+							pa4 = ind.tagF - 10 * pa3;
+							if(runif(1) < 0.5)
+								paternal_F = pa3;
+							else
+								paternal_F = pa4;
+							if(paternal == 4)
+								next;
+						}
+						
+						
+						if(ind.tag == 12 | ind.tag == 21 | ind.tag == 16 | ind.tag == 61){
+							if(paternal == 1){
+								resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+								if (runif(1) < DRIVE_CONVERSION)
+									paternal = 2;
+								else if(runif(1) < resistance)
+									paternal = 4;
+								else
+									paternal = 1;
+							}
+						}
+						ind.tag = paternal;
+						if(DISTANT_SITE)
+							ind.tagF = paternal_F;
+					}
+				}
+			}
+			else if(runif(1) < male_from_p8){
+				p8_poly_male = i1.nearestNeighbors(ind, p8.individualCount, p8);
+				if(size(p8_poly_male) > 0){
+					attempt_no = 0;
+					found_mate = F;
+					while(1){
+						mate_no = 0;
+						if(size(p8_poly_male) > 1)
+							mate_no = rdunif(1, max=size(p8_poly_male)-1);
+						selected_mate = p8_poly_male[mate_no];
+						mate_attractiveness = genotypeFitness(selected_mate);
+						if(selected_mate.countOfMutationsOfType(m8))
+							mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+						if (runif(1) < mate_attractiveness) {
+							found_mate = T;
+							break; //select this mate.
+						}
+						attempt_no = attempt_no + 1;
+						if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+							break;
+					}
+					if(found_mate){
+						ind.tag =setTag(selected_mate);
+						pa1 = asInteger(ind.tag/10);
+						pa2 = ind.tag - 10 * pa1;
+						if(pa1 == 1 | pa1 == 2 | pa1 == 3 | pa1 == 4){
+							if(pa2 == 5 | pa2 == 6 | pa2 == 7 | pa2 == 8)
+								paternal = pa1;
+							else{
+								if(runif(1)<0.5)
+									paternal = pa1;
+								else
+									paternal = pa2;
+							}
+						}else
+							paternal = pa2;
+						
+						if(DISTANT_SITE){
+							ind.tagF = setTagF(selected_mate);
+							pa3 = asFloat(asInteger(ind.tagF/10));
+							pa4 = ind.tagF - 10 * pa3;
+							if(runif(1) < 0.5)
+								paternal_F = pa3;
+							else
+								paternal_F = pa4;
+							if(paternal == 4)
+								next;
+						}
+						
+						
+						if(ind.tag == 12 | ind.tag == 21 | ind.tag == 16 | ind.tag == 61){
+							if(paternal == 1){
+								resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+								if (runif(1) < DRIVE_CONVERSION)
+									paternal = 2;
+								else if(runif(1) < resistance)
+									paternal = 4;
+								else
+									paternal = 1;
+							}
+						}
+						ind.tag = paternal;
+						if(DISTANT_SITE)
+							ind.tagF = paternal_F;
+					}
+				}
+			}
+			else if(runif(1) < male_from_p7){
+				p7_poly_male = i1.nearestNeighbors(ind, p7.individualCount, p7);
+				p7_mono_male = i1.nearestNeighbors(ind, p20.individualCount, p20);
+				p7_male = c(p7_poly_male,p7_mono_male);
+				if(size(p7_male) > 0){
+					attempt_no = 0;
+					found_mate = F;
+					while(1){
+						mate_no = 0;
+						if(size(p7_male) > 1)
+							mate_no = rdunif(1, max=size(p7_male)-1);
+						selected_mate = p7_male[mate_no];
+						mate_attractiveness = genotypeFitness(selected_mate);
+						if(selected_mate.countOfMutationsOfType(m8))
+							mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+						if (runif(1) < mate_attractiveness) {
+							found_mate = T;
+							break; //select this mate.
+						}
+						attempt_no = attempt_no + 1;
+						if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+							break;
+					}
+					if(found_mate){
+						ind.tag =setTag(selected_mate);
+						pa1 = asInteger(ind.tag/10);
+						pa2 = ind.tag - 10 * pa1;
+						if(pa1 == 1 | pa1 == 2 | pa1 == 3 | pa1 == 4){
+							if(pa2 == 5 | pa2 == 6 | pa2 == 7 | pa2 == 8)
+								paternal = pa1;
+							else{
+								if(runif(1)<0.5)
+									paternal = pa1;
+								else
+									paternal = pa2;
+							}
+						}else
+							paternal = pa2;
+						
+						if(DISTANT_SITE){
+							ind.tagF = setTagF(selected_mate);
+							pa3 = asFloat(asInteger(ind.tagF/10));
+							pa4 = ind.tagF - 10 * pa3;
+							if(runif(1) < 0.5)
+								paternal_F = pa3;
+							else
+								paternal_F = pa4;
+							if(paternal == 4)
+								next;
+						}
+						
+						
+						if(ind.tag == 12 | ind.tag == 21 | ind.tag == 16 | ind.tag == 61){
+							if(paternal == 1){
+								resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+								if (runif(1) < DRIVE_CONVERSION)
+									paternal = 2;
+								else if(runif(1) < resistance)
+									paternal = 4;
+								else
+									paternal = 1;
+							}
+						}
+						
+						ind.tag = paternal;
+						if(DISTANT_SITE)
+							ind.tagF = paternal_F;
+					}
+				}
+			}
+			else if(runif(1) < male_from_p6){
+				p6_poly_male = i1.nearestNeighbors(ind, p6.individualCount, p6);
+				p6_mono_male = i1.nearestNeighbors(ind, p19.individualCount, p19);
+				p6_male = c(p6_poly_male,p6_mono_male);
+				if(size(p6_male) > 0){
+					attempt_no = 0;
+					found_mate = F;
+					while(1){
+						mate_no = 0;
+						if(size(p6_male) > 1)
+							mate_no = rdunif(1, max=size(p6_male)-1);
+						selected_mate = p6_male[mate_no];
+						mate_attractiveness = genotypeFitness(selected_mate);
+						if(selected_mate.countOfMutationsOfType(m8))
+							mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+						if (runif(1) < mate_attractiveness) {
+							found_mate = T;
+							break; //select this mate.
+						}
+						attempt_no = attempt_no + 1;
+						if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+							break;
+					}
+					if(found_mate){
+						ind.tag =setTag(selected_mate);
+						pa1 = asInteger(ind.tag/10);
+						pa2 = ind.tag - 10 * pa1;
+						if(pa1 == 1 | pa1 == 2 | pa1 == 3 | pa1 == 4){
+							if(pa2 == 5 | pa2 == 6 | pa2 == 7 | pa2 == 8)
+								paternal = pa1;
+							else{
+								if(runif(1)<0.5)
+									paternal = pa1;
+								else
+									paternal = pa2;
+							}
+						}else
+							paternal = pa2;
+						
+						if(ind.tag == 12 | ind.tag == 21| ind.tag == 16 | ind.tag == 61){
+							if(paternal == 1){
+								resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+								if (runif(1) < DRIVE_CONVERSION)
+									paternal = 2;
+								else if(runif(1) < resistance)
+									paternal = 4;
+								else
+									paternal = 1;
+							}
+						}
+						
+						ind.tag = paternal;
+					}
+				}
+			}
+			else if(runif(1) < male_from_p5){
+				p5_poly_male = i1.nearestNeighbors(ind, p5.individualCount, p5);
+				p5_mono_male = i1.nearestNeighbors(ind, p18.individualCount, p18);
+				p5_male = c(p5_poly_male,p5_mono_male);
+				if(size(p5_male) > 0){
+					attempt_no = 0;
+					found_mate = F;
+					while(1){
+						mate_no = 0;
+						if(size(p5_male) > 1)
+							mate_no = rdunif(1, max=size(p5_male)-1);
+						selected_mate = p5_male[mate_no];
+						mate_attractiveness = genotypeFitness(selected_mate);
+						if(selected_mate.countOfMutationsOfType(m8))
+							mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+						if (runif(1) < mate_attractiveness) {
+							found_mate = T;
+							break; //select this mate.
+						}
+						attempt_no = attempt_no + 1;
+						if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+							break;
+					}
+					if(found_mate){
+						ind.tag =setTag(selected_mate);
+						pa1 = asInteger(ind.tag/10);
+						pa2 = ind.tag - 10 * pa1;
+						if(pa1 == 1 | pa1 == 2 | pa1 == 3 | pa1 == 4){
+							if(pa2 == 5 | pa2 == 6 | pa2 == 7 | pa2 == 8)
+								paternal = pa1;
+							else{
+								if(runif(1)<0.5)
+									paternal = pa1;
+								else
+									paternal = pa2;
+							}
+						}else
+							paternal = pa2;
+						
+						if(ind.tag == 12 | ind.tag == 21| ind.tag == 16 | ind.tag == 61){
+							if(paternal == 1){
+								resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+								if (runif(1) < DRIVE_CONVERSION)
+									paternal = 2;
+								else if(runif(1) < resistance)
+									paternal = 4;
+								else
+									paternal = 1;
+							}
+						}
+						ind.tag = paternal;
+					}
+				}
+			}
+			else if(runif(1) < male_from_p4){
+				p4_poly_male = i1.nearestNeighbors(ind, p4.individualCount, p4);
+				p4_mono_male = i1.nearestNeighbors(ind, p17.individualCount, p17);
+				p4_male = c(p4_poly_male,p4_mono_male);
+				if(size(p4_male) > 0){
+					attempt_no = 0;
+					found_mate = F;
+					while(1){
+						mate_no = 0;
+						if(size(p4_male) > 1)
+							mate_no = rdunif(1, max=size(p4_male)-1);
+						selected_mate = p4_male[mate_no];
+						mate_attractiveness = genotypeFitness(selected_mate);
+						if(selected_mate.countOfMutationsOfType(m8))
+							mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+						if (runif(1) < mate_attractiveness) {
+							found_mate = T;
+							break; //select this mate.
+						}
+						attempt_no = attempt_no + 1;
+						if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+							break;
+					}
+					if(found_mate){
+						ind.tag =setTag(selected_mate);
+						pa1 = asInteger(ind.tag/10);
+						pa2 = ind.tag - 10 * pa1;
+						if(pa1 == 1 | pa1 == 2 | pa1 == 3 | pa1 == 4){
+							if(pa2 == 5 | pa2 == 6 | pa2 == 7 | pa2 == 8)
+								paternal = pa1;
+							else{
+								if(runif(1)<0.5)
+									paternal = pa1;
+								else
+									paternal = pa2;
+							}
+						}else
+							paternal = pa2;
+						
+						if(ind.tag == 12 | ind.tag == 21| ind.tag == 16 | ind.tag == 61){
+							if(paternal == 1){
+								resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+								if (runif(1) < DRIVE_CONVERSION)
+									paternal = 2;
+								else if(runif(1) < resistance)
+									paternal = 4;
+								else
+									paternal = 1;
+							}
+						}
+						ind.tag = paternal;
+					}
+				}
+			}
+			else if (runif(1) < male_from_p3){
+				p3_poly_male = i1.nearestNeighbors(ind, p3.individualCount, p3);
+				p3_mono_male = i1.nearestNeighbors(ind, p16.individualCount, p16);
+				p3_male = c(p3_poly_male,p3_mono_male);
+				if(size(p3_male) > 0){
+					attempt_no = 0;
+					found_mate = F;
+					while(1){
+						mate_no = 0;
+						if(size(p3_male) > 1)
+							mate_no = rdunif(1, max=size(p3_male)-1);
+						selected_mate = p3_male[mate_no];
+						mate_attractiveness = genotypeFitness(selected_mate);
+						if(selected_mate.countOfMutationsOfType(m8))
+							mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+						if (runif(1) < mate_attractiveness) {
+							found_mate = T;
+							break; //select this mate.
+						}
+						attempt_no = attempt_no + 1;
+						if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+							break;
+					}
+					if(found_mate){
+						ind.tag =setTag(selected_mate);
+						pa1 = asInteger(ind.tag/10);
+						pa2 = ind.tag - 10 * pa1;
+						if(pa1 == 1 | pa1 == 2 | pa1 == 3 | pa1 == 4){
+							if(pa2 == 5 | pa2 == 6 | pa2 == 7 | pa2 == 8)
+								paternal = pa1;
+							else{
+								if(runif(1)<0.5)
+									paternal = pa1;
+								else
+									paternal = pa2;
+							}
+						}else
+							paternal = pa2;
+						
+						if(ind.tag == 12 | ind.tag == 21| ind.tag == 16 | ind.tag == 61){
+							if(paternal == 1){
+								resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+								if (runif(1) < DRIVE_CONVERSION)
+									paternal = 2;
+								else if(runif(1) < resistance)
+									paternal = 4;
+								else
+									paternal = 1;
+							}
+						}
+						ind.tag = paternal;
+					}
+				}
+			}
+			else{
+				p2_poly_male = i1.nearestNeighbors(ind, p2.individualCount, p2);
+				p2_mono_male = i1.nearestNeighbors(ind, p15.individualCount, p15);
+				p2_male = c(p2_poly_male,p2_mono_male);
+				if(size(p2_male) > 0){
+					attempt_no = 0;
+					found_mate = F;
+					while(1){
+						mate_no = 0;
+						if(size(p2_male) > 1)
+							mate_no = rdunif(1, max=size(p2_male)-1);
+						selected_mate = p2_male[mate_no];
+						mate_attractiveness = genotypeFitness(selected_mate);
+						if(selected_mate.countOfMutationsOfType(m8))
+							mate_attractiveness = mate_attractiveness*POLYGYNE_MALE_RATE;
+						if (runif(1) < mate_attractiveness) {
+							found_mate = T;
+							break; //select this mate.
+						}
+						attempt_no = attempt_no + 1;
+						if (attempt_no == MAX_ATTEMPTS_TO_FIND_SUITABLE_MATE)
+							break;
+					}
+					if(found_mate){
+						ind.tag =setTag(selected_mate);
+						pa1 = asInteger(ind.tag/10);
+						pa2 = ind.tag - 10 * pa1;
+						if(pa1 == 1 | pa1 == 2 | pa1 == 3 | pa1 == 4){
+							if(pa2 == 5 | pa2 == 6 | pa2 == 7 | pa2 == 8)
+								paternal = pa1;
+							else{
+								if(runif(1)<0.5)
+									paternal = pa1;
+								else
+									paternal = pa2;
+							}
+						}else
+							paternal = pa2;
+						
+						if(ind.tag == 12 | ind.tag == 21| ind.tag == 16 | ind.tag == 61){
+							if(paternal == 1){
+								resistance = GERMLINE_RESISTANCE_CUT_RATE_F + (1 - GERMLINE_RESISTANCE_CUT_RATE_F - DRIVE_CONVERSION) * EMBRYO_RESISTANCE_CUT_RATE_F;
+								if (runif(1) < DRIVE_CONVERSION)
+									paternal = 2;
+								else if(runif(1) < resistance)
+									paternal = 4;
+								else
+									paternal = 1;
+							}
+						}
+						ind.tag = paternal;
+					}
+				}
+			}
+		}
+		
+		if (ind.tag != 100) {  // individual has already mated once, using individual tag to find that male.
+			mate = sample(p12.individuals, 1);
+			//print(num_offspring);
+			if(ind.age == 1)
+				num_offspring = 0;
+			else if (ind.age == 2)
+				num_offspring = rpois(1, 1.741409321*MONO_REPRODUCTION_FACTOR * somatic(ind)); //2.390819
+			else if (ind.age == 3)
+				num_offspring = rpois(1, 5.81364606*MONO_REPRODUCTION_FACTOR * somatic(ind));  //6.040647
+			else if (ind.age == 4)
+				num_offspring = rpois(1, 10.61550578*MONO_REPRODUCTION_FACTOR * somatic(ind)); //10.34441
+			else if (ind.age == 5)
+				num_offspring = rpois(1, 13.39653663*MONO_REPRODUCTION_FACTOR * somatic(ind)); //12.83697
+			else if (ind.age == 6)
+				num_offspring = rpois(1, 14.40318691*MONO_REPRODUCTION_FACTOR * somatic(ind)); //13.7392
+			else
+				num_offspring = rpois(1, 14.7025472*MONO_REPRODUCTION_FACTOR * somatic(ind));
+			if(num_offspring < 0)
+				num_offspring = 0;
+			else
+				num_offspring = num_offspring;
+			for (i in seqLen(asInteger(num_offspring)))
+				offspring = p13.addCrossed(ind, mate, "F");
+		}
+	}
+	self.active = 0;
+}
+
+
+
+//// START THE SIMULATION BY ADDING AN INITIAL WILD POPULATION.
+1 early(){
+	//start with a population of wild type fire ants.
+	//p0-11 for polygyne with different age;p13-p20 for monogyne
+	sim.addSubpop("p0", asInteger(3.733747218*NUM_POLYGYNE*PERCENT_POLYGYNE), 0.0); //age0 colony
+	sim.addSubpop("p1", asInteger(0.373374722*NUM_POLYGYNE*PERCENT_POLYGYNE), 0.0);
+	sim.addSubpop("p2", asInteger(0.133365568*NUM_POLYGYNE*PERCENT_POLYGYNE), 0.0);
+	sim.addSubpop("p3", asInteger(0.072314535*NUM_POLYGYNE*PERCENT_POLYGYNE), 0.0);
+	sim.addSubpop("p4", asInteger(0.054589735*NUM_POLYGYNE*PERCENT_POLYGYNE), 0.0);
+	sim.addSubpop("p5", asInteger(0.045799163*NUM_POLYGYNE*PERCENT_POLYGYNE), 0.0);
+	sim.addSubpop("p6", asInteger(0.039385707*NUM_POLYGYNE*PERCENT_POLYGYNE), 0.0);
+	sim.addSubpop("p7", asInteger(0.034129655*NUM_POLYGYNE*PERCENT_POLYGYNE), 0.0);
+	sim.addSubpop("p8", asInteger(0.02969761*NUM_POLYGYNE*PERCENT_POLYGYNE), 0.0);
+	sim.addSubpop("p9", asInteger(0.025924205*NUM_POLYGYNE*PERCENT_POLYGYNE), 0.0);
+	sim.addSubpop("p10", asInteger(0.022663768*NUM_POLYGYNE*PERCENT_POLYGYNE), 0.0);
+	sim.addSubpop("p11", asInteger(0.168755333*NUM_POLYGYNE*PERCENT_POLYGYNE), 0.0);
+	
+	p0.individuals.age = 0;
+	p1.individuals.age = 1;
+	p2.individuals.age = 2;
+	p3.individuals.age = 3;
+	p4.individuals.age = 4;
+	p5.individuals.age = 5;
+	p6.individuals.age = 6;
+	p7.individuals.age = 7;
+	p8.individuals.age = 8;
+	p9.individuals.age = 9;
+	p10.individuals.age = 10;
+	p11.individuals.age = 11;
+	
+	poly = c(p0.individuals, p1.individuals, p2.individuals, p3.individuals, p4.individuals, p5.individuals, p6.individuals, p7.individuals, p8.individuals, p9.individuals, p10.individuals, p11.individuals);
+	catn("ini: " + p2.individualCount + " " + p3.individualCount + " " + p4.individualCount+ " " + p5.individualCount+ " " + p6.individualCount+ " " + p7.individualCount+ " " + p8.individualCount+ " " + p9.individualCount+ " " + p10.individualCount+ " " + p11.individualCount);
+	poly.tag = -100;
+	poly.genomes.addNewDrawnMutation(m1,0);
+	poly.genome1.addNewDrawnMutation(m7,3);
+	poly.genome2.addNewDrawnMutation(m8,3);
+	
+	sim.addSubpop("p13", asInteger(4.336364404*NUM_MONOGYNE*(1-PERCENT_POLYGYNE)), 0.0); //age0 colony
+	sim.addSubpop("p14", asInteger(0.43363644*NUM_MONOGYNE*(1-PERCENT_POLYGYNE)), 0.0);
+	sim.addSubpop("p15", asInteger(0.178072874*NUM_MONOGYNE*(1-PERCENT_POLYGYNE)), 0.0);
+	sim.addSubpop("p16", asInteger(0.109059772*NUM_MONOGYNE*(1-PERCENT_POLYGYNE)), 0.0);
+	sim.addSubpop("p17", asInteger(0.089438907*NUM_MONOGYNE*(1-PERCENT_POLYGYNE)), 0.0);
+	sim.addSubpop("p18", asInteger(0.080720638*NUM_MONOGYNE*(1-PERCENT_POLYGYNE)), 0.0);
+	sim.addSubpop("p19", asInteger(0.074471948*NUM_MONOGYNE*(1-PERCENT_POLYGYNE)), 0.0);
+	sim.addSubpop("p20", asInteger(0.034599421*NUM_MONOGYNE*(1-PERCENT_POLYGYNE)), 0.0);
+	p13.individuals.age = 0;
+	p14.individuals.age = 1;
+	p15.individuals.age = 2;
+	p16.individuals.age = 3;
+	p17.individuals.age = 4;
+	p18.individuals.age = 5;
+	p19.individuals.age = 6;
+	p20.individuals.age = 7;
+	mono = c(p13.individuals, p14.individuals, p15.individuals, p16.individuals, p17.individuals, p18.individuals, p19.individuals, p20.individuals);
+	catn("poly:: " + p0.individualCount +" "+ p1.individualCount + " "+ p2.individualCount +" "+ p3.individualCount + " " + p4.individualCount + " " + p5.individualCount + " " + p6.individualCount + " " + p7.individualCount + " " + p8.individualCount + " " + p9.individualCount + " "+ p10.individualCount + " " + p11.individualCount);
+	catn(p13.individualCount +" "+ p14.individualCount + " "+ p15.individualCount +" "+p16.individualCount + " " + p17.individualCount + " " + p18.individualCount + " " +p19.individualCount + " "+ p20.individualCount);
+	mono.tag = 100;
+	mono.genomes.addNewDrawnMutation(m1,0);
+	mono.genomes.addNewDrawnMutation(m7,3);
+	catn("INITIAL:: " + size(poly) + " " + size(mono));
+	all = c(mono,poly);
+	if(DISTANT_SITE){
+		all.genomes.addNewDrawnMutation(m10,6);
+		all.tagF = 22.0;
+	}
+	all.x = runif(length(all), 0, 1);
+	all.y = runif(length(all), 0, 1);
+	all.color = "green";
+	
+	// Add males
+	sim.addSubpop("p12",NUM_MALE, 1.0);
+	male = p12.individuals;
+	male.color = "grey";
+	sim.setValue("chasing start", 0);
+}
+
+
+//// DROP A GROUP OF MODIFIED INDIVIDUALS INTO THE POPULATION.
+2:7 first(){
+	for(ind in p1.individuals){
+		//Unmated queens can mate with dr male and get a tag
+		if(ind.tag == -100){
+			if(runif(1) < RELEASE_RATIO)
+				ind.tag = 2;
+			else if(runif(1) < RELEASE_RATIO)
+				ind.tag = -2;
+			else
+				ind.tag =ind.tag;
+		}
+	}
+	for(ind in p14.individuals){
+		if(ind.tag == 100){
+			if(runif(1) < RELEASE_RATIO)
+				ind.tag = 2;
+			else if(runif(1) < RELEASE_RATIO)
+				ind.tag = -2;
+			else
+				ind.tag =ind.tag;
+		}
+	}
+}
+
+early(){
+	age2=c();
+	age3=c();
+	age4=c();
+	age5=c();
+	age6=c();
+	age7=c();
+	age8=c();
+	age9=c();
+	age10=c();
+	age11=c();
+	die=c();
+	mature_poly = c(p2,p3,p4,p5,p6,p7,p8,p9,p10,p11);
+	for(subpop in mature_poly)
+		i10.evaluate(c(p0,subpop));
+	//All queens have chance to change their genome, but if they cannot find a queen, then 80% them will die
+	for(ind in p2.individuals){
+		if(runif(1) < PROB_OF_GENOME_CHANGE){
+			new_queen = i10.nearestNeighbors(ind, p0.individualCount, p0);
+			if(size(new_queen) > 0){
+				queen_no =asInteger(runif(1,max=size(new_queen)-1));
+				new_queen=new_queen[queen_no];
+				new_queen.tag = -100;
+				new_queen.x = ind.x;
+				new_queen.y = ind.y;
+				new_queen.age =2;
+				age2=c(age2,new_queen);
+				die=c(die,ind);
+			}else{
+				if(runif(1) < 0.8)
+					die=c(die,ind);
+			}
+		}
+	}
+	for(ind in p3.individuals){
+		if(runif(1) < PROB_OF_GENOME_CHANGE){
+			new_queen = i10.nearestNeighbors(ind, p0.individualCount, p0);
+			if(size(new_queen) > 0){
+				queen_no =asInteger(runif(1,max=size(new_queen)-1));
+				new_queen=new_queen[queen_no];
+				new_queen.tag = -100;
+				new_queen.x = ind.x;
+				new_queen.y = ind.y;
+				new_queen.age =3;
+				age3=c(age3,new_queen);
+				die=c(die,ind);
+			}else{
+				if(runif(1) < 0.8)
+					die=c(die,ind);
+			}
+		}
+	}
+	for(ind in p4.individuals){
+		if(runif(1) < PROB_OF_GENOME_CHANGE){
+			new_queen = i10.nearestNeighbors(ind, p0.individualCount, p0);
+			if(size(new_queen) > 0){
+				queen_no =asInteger(runif(1,max=size(new_queen)-1));
+				new_queen=new_queen[queen_no];
+				new_queen.tag = -100;
+				new_queen.x = ind.x;
+				new_queen.y = ind.y;
+				new_queen.age =4;
+				age4=c(age4,new_queen);
+				die=c(die,ind);
+			}else{
+				if(runif(1) < 0.8)
+					die=c(die,ind);
+			}
+		}
+	}
+	for(ind in p5.individuals){
+		if(runif(1) < PROB_OF_GENOME_CHANGE){
+			new_queen = i10.nearestNeighbors(ind, p0.individualCount, p0);
+			if(size(new_queen) > 0){
+				queen_no =asInteger(runif(1,max=size(new_queen)-1));
+				new_queen=new_queen[queen_no];
+				new_queen.tag = -100;
+				new_queen.x = ind.x;
+				new_queen.y = ind.y;
+				new_queen.age =5;
+				age5=c(age5,new_queen);
+				die=c(die,ind);
+			}else{
+				if(runif(1) < 0.8)
+					die=c(die,ind);
+			}
+		}
+	}
+	for(ind in p6.individuals){
+		if(runif(1) < PROB_OF_GENOME_CHANGE){
+			new_queen = i10.nearestNeighbors(ind, p0.individualCount, p0);
+			if(size(new_queen) > 0){
+				queen_no =asInteger(runif(1,max=size(new_queen)-1));
+				new_queen=new_queen[queen_no];
+				new_queen.tag = -100;
+				new_queen.x = ind.x;
+				new_queen.y = ind.y;
+				new_queen.age =6;
+				age6=c(age6,new_queen);
+				die=c(die,ind);
+			}else{
+				if(runif(1) < 0.8)
+					die=c(die,ind);
+			}
+		}
+	}
+	for(ind in p7.individuals){
+		if(runif(1) < PROB_OF_GENOME_CHANGE){
+			new_queen = i10.nearestNeighbors(ind, p0.individualCount, p0);
+			if(size(new_queen) > 0){
+				queen_no =asInteger(runif(1,max=size(new_queen)-1));
+				new_queen=new_queen[queen_no];
+				new_queen.tag = -100;
+				new_queen.x = ind.x;
+				new_queen.y = ind.y;
+				new_queen.age =7;
+				age7=c(age7,new_queen);
+				die=c(die,ind);
+			}else{
+				if(runif(1) < 0.8)
+					die=c(die,ind);
+			}
+		}
+	}
+	for(ind in p8.individuals){
+		if(runif(1) < PROB_OF_GENOME_CHANGE){
+			new_queen = i10.nearestNeighbors(ind, p0.individualCount, p0);
+			if(size(new_queen) > 0){
+				queen_no =asInteger(runif(1,max=size(new_queen)-1));
+				new_queen=new_queen[queen_no];
+				new_queen.tag = -100;
+				new_queen.x = ind.x;
+				new_queen.y = ind.y;
+				new_queen.age =8;
+				age8=c(age8,new_queen);
+				die=c(die,ind);
+			}else{
+				if(runif(1) < 0.8)
+					die=c(die,ind);
+			}
+		}
+	}
+	for(ind in p9.individuals){
+		if(runif(1) < PROB_OF_GENOME_CHANGE){
+			new_queen = i10.nearestNeighbors(ind, p0.individualCount, p0);
+			if(size(new_queen) > 0){
+				queen_no =asInteger(runif(1,max=size(new_queen)-1));
+				new_queen=new_queen[queen_no];
+				new_queen.tag = -100;
+				new_queen.x = ind.x;
+				new_queen.y = ind.y;
+				new_queen.age =9;
+				age9=c(age9,new_queen);
+				die=c(die,ind);
+			}else{
+				if(runif(1) < 0.8)
+					die=c(die,ind);
+			}
+		}
+	}
+	for(ind in p10.individuals){
+		if(runif(1) < PROB_OF_GENOME_CHANGE){
+			new_queen = i10.nearestNeighbors(ind, p0.individualCount, p0);
+			if(size(new_queen) > 0){
+				queen_no =asInteger(runif(1,max=size(new_queen)-1));
+				new_queen=new_queen[queen_no];
+				new_queen.tag = -100;
+				new_queen.x = ind.x;
+				new_queen.y = ind.y;
+				new_queen.age =10;
+				age10=c(age10,new_queen);
+				die=c(die,ind);
+			}else{
+				if(runif(1) < 0.8)
+					die=c(die,ind);
+			}
+		}
+	}
+	for(ind in p11.individuals){
+		if(runif(1) < PROB_OF_GENOME_CHANGE){
+			new_queen = i10.nearestNeighbors(ind, p0.individualCount, p0);
+			if(size(new_queen) > 0){
+				queen_no =asInteger(runif(1,max=size(new_queen)-1));
+				new_queen=new_queen[queen_no];
+				new_queen.tag = -100;
+				new_queen.x = ind.x;
+				new_queen.y = ind.y;
+				new_queen.age =11;
+				age11=c(age11,new_queen);
+				die=c(die,ind);
+			}else{
+				if(runif(1) < 0.8)
+					die=c(die,ind);
+			}
+		}
+	}
+	if(isNULL(die))
+		0;
+	else
+		sim.killIndividuals(die);
+	if(!isNULL(age2))
+		p2.takeMigrants(age2);
+	if(!isNULL(age3))
+		p3.takeMigrants(age3);
+	if(!isNULL(age4))
+		p4.takeMigrants(age4);
+	if(!isNULL(age5))
+		p5.takeMigrants(age5);
+	if(!isNULL(age6))
+		p6.takeMigrants(age6);
+	if(!isNULL(age7))
+		p7.takeMigrants(age7);
+	if(!isNULL(age8))
+		p8.takeMigrants(age8);
+	if(!isNULL(age9))
+		p9.takeMigrants(age9);
+	if(!isNULL(age10))
+		p10.takeMigrants(age10);
+	if(!isNULL(age11))
+		p11.takeMigrants(age11);
+
+}
+
+//// AGE BASED SURVIVAL RULES/ VIABILITY COMPETITION, AND MANAGE THE COLD STORAGE SUBPOPULATION.
+early() {
+	// viability competition/ Colonies survival rules for monogyne and polygyne
+	all = c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14,p15,p16,p17,p18,p19,p20);
+	all_inds = all.individuals;
+	i2.evaluate(p14); //i2 for age1(p14)
+	for(subpop in c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p15,p16,p17,p18,p19,p20))
+		i2.evaluate(c(p14,subpop));
+	i4.evaluate(p15);
+	for(subpop in c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14,p16,p17,p18,p19,p20))
+		i4.evaluate(c(p15,subpop));
+	i5.evaluate(p16);
+	for(subpop in c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14,p15,p17,p18,p19,p20))
+		i5.evaluate(c(p16,subpop));
+	i6.evaluate(p17);
+	for(subpop in c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14,p15,p16,p18,p19,p20))
+		i6.evaluate(c(p17,subpop));
+	i7.evaluate(p18);
+	for(subpop in c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14,p15,p16,p17,p19,p20))
+		i7.evaluate(c(p18,subpop));
+	i8.evaluate(p19);
+	for(subpop in c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14,p15,p16,p17,p18,p20))
+		i8.evaluate(c(p19,subpop));
+	i9.evaluate(p20);
+	for(subpop in c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14,p15,p16,p17,p18,p19))
+		i9.evaluate(c(p20,subpop));
+	//POLYGYNE
+	i11.evaluate(p1); //i11 for polygyne age1(p1)
+	for(subpop in c(p0, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i11.evaluate(c(p1,subpop));
+	i12.evaluate(p2);
+	for(subpop in c(p0, p1, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i12.evaluate(c(p2,subpop));
+	i13.evaluate(p3);
+	for(subpop in c(p0, p1, p2,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i13.evaluate(c(p3,subpop));
+	i14.evaluate(p4);
+	for(subpop in c(p0, p1, p3,p2,p5,p6,p7,p8,p9,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i14.evaluate(c(p4,subpop));
+	i15.evaluate(p5);
+	for(subpop in c(p0, p1, p2,p3,p4,p6,p7,p8,p9,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i15.evaluate(c(p5,subpop));
+	i16.evaluate(p6);
+	for(subpop in c(p0, p1, p2,p3,p4,p5,p7,p8,p9,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i16.evaluate(c(p6,subpop));
+	i17.evaluate(p7);
+	for(subpop in c(p0, p1, p2,p3,p4,p5,p6,p8,p9,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i17.evaluate(c(p7,subpop));
+	i18.evaluate(p8);
+	for(subpop in c(p0, p1, p2,p3,p4,p5,p6,p7,p9,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i18.evaluate(c(p8,subpop));
+	i19.evaluate(p9);
+	for(subpop in c(p0, p1, p2,p3,p4,p5,p6,p7,p8,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i19.evaluate(c(p9,subpop));
+	i19.evaluate(p10);
+	for(subpop in c(p0, p1, p2,p3,p4,p5,p6,p7,p8,p9,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i19.evaluate(c(p10,subpop));
+	i19.evaluate(p11);
+	for(subpop in c(p0, p1, p2,p3,p4,p5,p6,p7,p8,p9,p10,p13,p14, p15,p16,p17,p18,p19,p20))
+		i19.evaluate(c(p11,subpop));
+	
+	monogyne = c(p13,p14,p15,p16,p17,p18,p19,p20);  // p15 for age 2
+	polygyne = c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11); //p2 for age 2
+	/*for(ind in monogyne.individuals){
+		if(ind.countOfMutationsOfType(m2) >0)
+			print("======T");
+	}*/
+	mono_ij=0;
+	poly_ij=0;
+	mono_lisi = c(8953,28804,72775,124625,154654);			 poly_lisi=c(17907,57607,145550,249250,309308,331048,337513,339318.464,339813.9885,339949.2858,340000);
+	
+	for(subpop in monogyne){
+		inds_for_age_class = subpop.individuals;
+		has_drive = asInteger(inds_for_age_class.genome1.countOfMutationsOfType(m2) == NUM_GRNAS | inds_for_age_class.genome2.countOfMutationsOfType(m2) == NUM_GRNAS);
+		somatic_affect = 1 - has_drive * (1 - SOMATIC_FITNESS_MUTLIPLIER_F);
+		exert_from_intra_age2 = i4.totalOfNeighborStrengths(inds_for_age_class, p15);
+		exert_from_intra_age3 = i5.totalOfNeighborStrengths(inds_for_age_class, p16);
+		exert_from_intra_age4 = i6.totalOfNeighborStrengths(inds_for_age_class, p17);
+		exert_from_intra_age5 = i7.totalOfNeighborStrengths(inds_for_age_class, p18);
+		exert_from_intra_age6 = i8.totalOfNeighborStrengths(inds_for_age_class, p19);
+		exert_from_intra_age7 = i9.totalOfNeighborStrengths(inds_for_age_class, p20);
+		
+		exert_from_inter_age2 = i12.totalOfNeighborStrengths(inds_for_age_class, p2);
+		exert_from_inter_age3 = i13.totalOfNeighborStrengths(inds_for_age_class, p3);
+		exert_from_inter_age4 = i14.totalOfNeighborStrengths(inds_for_age_class, p4);
+		exert_from_inter_age5 = i15.totalOfNeighborStrengths(inds_for_age_class, p5);
+		exert_from_inter_age6 = i16.totalOfNeighborStrengths(inds_for_age_class, p6);
+		exert_from_inter_age7 = i17.totalOfNeighborStrengths(inds_for_age_class, p7);
+		// The larger polygyne colonies exert more competition on monogyne 
+		exert_from_inter_age8 = i18.totalOfNeighborStrengths(inds_for_age_class,p8);
+		exert_from_inter_age9 = i19.totalOfNeighborStrengths(inds_for_age_class, p9);
+		exert_from_inter_age10 = i19.totalOfNeighborStrengths(inds_for_age_class, p10);
+		exert_from_inter_mature = i19.totalOfNeighborStrengths(inds_for_age_class, p11);
+		
+		intra_competition = (exert_from_intra_age2)*28804 + (exert_from_intra_age3) * 72775 + (exert_from_intra_age4) * 124625 + (exert_from_intra_age5) * 154654 + (exert_from_intra_age6) * 165524 + (exert_from_intra_age7) * 168756 ;
+		inter_competition = exert_from_inter_age2*57607 + exert_from_inter_age3*145550 + exert_from_inter_age4*249250+ exert_from_inter_age5*309308 + exert_from_inter_age6*331048 + exert_from_inter_age7*337513 +exert_from_inter_age8* 339318.464 +exert_from_inter_age9* 339813.9885 + exert_from_inter_age10 * 339949.2858 + exert_from_inter_mature*340000;
+		competition_ratio = (intra_competition + inter_competition*0.6)/EXPECTED_MONOGYNE_COMPETITION;
+		if(subpop == p13){
+			catn("age0_before::" + p13.individualCount);
+			p13.individuals.fitnessScaling = 0.1* LOW_DENSITY_GROWTH_RATE / ((LOW_DENSITY_GROWTH_RATE - 1) * competition_ratio + 1);
+		}
+		else if(subpop == p19){
+			p19.individuals.fitnessScaling = 0.5 * (0.95 - 0.6714 * exp(-2.222 / 100000 * 165524 /competition_ratio));}
+		else if(subpop == p20)
+			p20.individuals.fitnessScaling = 0.0;
+		else if(subpop == p14){
+			p14.individuals.fitnessScaling = (0.95 - 0.6714 * exp(-2.222 / 100000 * 8953 / competition_ratio));}
+		else if(subpop == p15){
+			catn("mono_p15" + " " + sum(competition_ratio)/p15.individualCount);
+			p15.individuals.fitnessScaling = (0.95 - 0.6714 * exp(-2.222 / 100000 * 28804 / competition_ratio));}
+		else if(subpop == p16){
+			p16.individuals.fitnessScaling = (0.95 - 0.6714 * exp(-2.222 / 100000 * 72775 / competition_ratio));}
+		else if(subpop == p17){
+			p17.individuals.fitnessScaling = (0.95 - 0.6714 * exp(-2.222 / 100000 * 124625 / competition_ratio));}
+		else{
+			p18.individuals.fitnessScaling =(0.95 - 0.6714 * exp(-2.222 / 100000 * 154654 / competition_ratio));
+		}
+	}
+	
+	
+	for(subpop in polygyne){
+		inds_for_age_class = subpop.individuals;
+		has_drive = asInteger(inds_for_age_class.genome1.countOfMutationsOfType(m2) == NUM_GRNAS | inds_for_age_class.genome2.countOfMutationsOfType(m2) == NUM_GRNAS);
+		somatic_affect = 1 - has_drive * (1 - SOMATIC_FITNESS_MUTLIPLIER_F);
+		exert_from_inter_age2 = i4.totalOfNeighborStrengths(inds_for_age_class, p15);
+		exert_from_inter_age3 = i5.totalOfNeighborStrengths(inds_for_age_class, p16);
+		exert_from_inter_age4 = i6.totalOfNeighborStrengths(inds_for_age_class, p17);
+		exert_from_inter_age5 = i7.totalOfNeighborStrengths(inds_for_age_class, p18);
+		exert_from_inter_age6 = i8.totalOfNeighborStrengths(inds_for_age_class, p19);
+		exert_from_inter_age7 = i9.totalOfNeighborStrengths(inds_for_age_class, p20);
+		
+		exert_from_intra_age2 = i12.totalOfNeighborStrengths(inds_for_age_class, p2);
+		exert_from_intra_age3 = i13.totalOfNeighborStrengths(inds_for_age_class, p3);
+		exert_from_intra_age4 = i14.totalOfNeighborStrengths(inds_for_age_class, p4);
+		exert_from_intra_age5 = i15.totalOfNeighborStrengths(inds_for_age_class, p5);
+		exert_from_intra_age6 = i16.totalOfNeighborStrengths(inds_for_age_class, p6);
+		exert_from_intra_age7 = i17.totalOfNeighborStrengths(inds_for_age_class, p7);
+		exert_from_intra_age8 = i18.totalOfNeighborStrengths(inds_for_age_class,p8);
+		exert_from_intra_age9 = i19.totalOfNeighborStrengths(inds_for_age_class, p9);
+		exert_from_intra_age10 = i19.totalOfNeighborStrengths(inds_for_age_class, p10);
+		exert_from_intra_mature = i19.totalOfNeighborStrengths(inds_for_age_class, p11);
+		intra_competition = (exert_from_intra_age2*57607 +exert_from_intra_age3*145550 + exert_from_intra_age4*249250+ exert_from_intra_age5*309308 + exert_from_intra_age6*331048 + exert_from_intra_age7*337513 + exert_from_intra_age8 * 339318.464 + exert_from_intra_age9 * 339813.9885 + exert_from_intra_age10* 339949.2858 + exert_from_intra_mature*340000);
+		inter_competition = (exert_from_inter_age2*28804 + exert_from_inter_age3 * 72775 + exert_from_inter_age4 * 124625 + exert_from_inter_age5* 154654 + exert_from_inter_age6 * 165524 + exert_from_inter_age7* 168756);
+		total_competition = POLYGYNE_INTRA_COMPETITION*intra_competition*0.6 + inter_competition;
+		competition_ratio = total_competition/EXPECTED_POLYGYNE_COMPETITION;
+		
+		if(subpop == p0){
+			catn("age:: " + p0.individualCount);
+			p0.individuals.fitnessScaling = 0.1* LOW_DENSITY_GROWTH_RATE / ((LOW_DENSITY_GROWTH_RATE - 1) * competition_ratio + 1);
+		}
+		else
+			subpop.individuals.fitnessScaling = (0.9 - 0.6714 * exp(-2.222 / 100000 * poly_lisi[poly_ij-1]/2 / competition_ratio));
+		poly_ij = poly_ij+1;
+	}
+}
+
+//Chasing detection and output
+1: late() {
+	this_gen = sim.cycle;
+	if(this_gen > 0){
+		total_subpop = c(p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p15,p16,p17,p18,p19,p20);
+	
+	all = total_subpop.individuals;
+	pop_size = length(all);
+	
+	females = all[all.sex =="F"];
+	num_females = length(females);
+	num_x = 2*num_females;
+	Begin_Track = F;
+	check= integerMod(sim.cycle + 2,3);
+	time_pop_size[check] = pop_size;
+	defineGlobal("time_pop_size",time_pop_size);
+	//allele counts
+	num_wt = sum(all.genomes.countOfMutationsOfType(m1)==NUM_GRNAS);
+	num_dr = sum(all.genomes.countOfMutationsOfType(m2)==NUM_GRNAS);
+	num_complete_r1 = sum(all.genomes.countOfMutationsOfType(m3)==NUM_GRNAS);
+	num_r2 = sum(all.genomes.countOfMutationsOfType(m4)==NUM_GRNAS);
+	num_has_drive = sum(all.countOfMutationsOfType(m2) >= NUM_GRNAS);
+	num_wt_homoz = sum(all.countOfMutationsOfType(m1) == 2*NUM_GRNAS);
+	rate_wt_homoz = num_wt_homoz/pop_size;
+	rate_has_drive = num_has_drive/size(pop_size);
+	num_nondrive = pop_size - num_has_drive;
+	
+	i20.evaluate(p2);
+	for(subpop in total_subpop)
+		i20.evaluate(c(p2,subpop));
+	i20.evaluate(p3);
+	for(subpop in total_subpop)
+		i20.evaluate(c(p3,subpop));
+	i20.evaluate(p4);
+	for(subpop in total_subpop)
+		i20.evaluate(c(p4,subpop));
+	i20.evaluate(p5);
+	for(subpop in total_subpop)
+		i20.evaluate(c(p5,subpop));
+	i20.evaluate(p6);
+	for(subpop in total_subpop)
+		i20.evaluate(c(p6,subpop));
+	i20.evaluate(p7);
+	for(subpop in total_subpop)
+		i20.evaluate(c(p7,subpop));
+	i20.evaluate(p8);
+	for(subpop in total_subpop)
+		i20.evaluate(c(p8,subpop));
+	i20.evaluate(p9);
+	for(subpop in total_subpop)
+		i20.evaluate(c(p9,subpop));
+	i20.evaluate(p10);
+	for(subpop in total_subpop)
+		i20.evaluate(c(p10,subpop));
+	i20.evaluate(p11);
+	for(subpop in total_subpop)
+		i20.evaluate(c(p11,subpop));
+	i20.evaluate(p15);
+	for(subpop in total_subpop)
+		i20.evaluate(c(p15,subpop));
+	i20.evaluate(p16);
+	for(subpop in total_subpop)
+		i20.evaluate(c(p16,subpop));
+	i20.evaluate(p17);
+	for(subpop in total_subpop)
+		i20.evaluate(c(p17,subpop));
+	i20.evaluate(p18);
+	for(subpop in total_subpop)
+		i20.evaluate(c(p18,subpop));
+	i20.evaluate(p19);
+	for(subpop in total_subpop)
+		i20.evaluate(c(p19,subpop));
+	i20.evaluate(p20);
+	for(subpop in total_subpop)
+		i20.evaluate(c(p20,subpop));
+	if (num_wt < EQUILIBRIUM_WT_ALLELE_THRESHOLD) {
+		catn("POTENTIAL_CHASE:: " + this_gen);
+	}
+	if (NO_DROP)
+		pass;
+	else {
+		catn("GEN: "+this_gen);
+		if (!TRACK_BY_CELL)
+			catn("WT_ALLELES:: " );
+	}
+	//record quadrant counts and calculate greens coefficient for chasing
+	//detection and overall
+	if (TRACK_BY_CELL)  {
+		//only start recording once the number of WT alleles first falls below 80% of equilibrium
+		if (1) {
+			nondrive = all[all.countOfMutationsOfType(m2) == 0]; //obtain non-drive individuals
+			nonx = nondrive.x;
+			nony = nondrive.y;
+			allx = all.x; //also track overall green's coefficient
+			ally = all.y;
+			pos_vec = 0:(asInteger(round(sqrt(NUMBER_OF_CELLS))) - 1);
+			dim = length(pos_vec);
+			cell_width = SIM_BOUND/dim;
+			positions = pos_vec * cell_width; //iterate through these x and y positions
+			nondrive_track = c(); //used for chasing detection
+			all_track = c();
+			
+			// for the chasing start detection
+			for (i in 0:(dim-1)) {
+				div_left = positions[i];
+				for (j in 0:(dim-1)) {
+					div_bot = positions[j];
+					
+					nondrive_in_division = (nonx >= div_left) & (nonx < (div_left + cell_width)) & (nony >= div_bot) & (nony < (div_bot + cell_width));
+					nondrive_in_cell = nondrive[nondrive_in_division];
+					nondrive_cell_count = size(nondrive_in_cell); //number in this cell
+					nondrive_track = c(nondrive_track, nondrive_cell_count); //add this onto this generation's count tracker
+					
+					all_in_division = (allx >= div_left) & (allx < (div_left + cell_width)) & (ally >= div_bot) & (ally < (div_bot + cell_width));
+					all_in_cell = all[all_in_division];
+					all_cell_count = size(all_in_cell);
+					all_track = c(all_track, all_cell_count);
+				}
+			} //done obtaining cell counts
+			//add the pop_size of all cells in this generation to varibles
+			chasing_start = sim.getValue("chasing start");
+			if (T){//chasing_start ==0
+				chasing_cell = 0;
+				index = integerMod(sim.cycle + 2,6);
+				compare_index = integerMod(sim.cycle + 3,6);
+				start = compare_index*NUMBER_OF_CELLS;
+				end = (compare_index+1)*NUMBER_OF_CELLS-1;
+				start1 = index*NUMBER_OF_CELLS;
+				end1 = (index+1)*NUMBER_OF_CELLS-1;
+				before = cell_pop_size[start:end];
+				before_pop_size = time_pop_size[compare_index];
+				time_pop_size[index] = pop_size;
+				defineGlobal("time_pop_size",time_pop_size);
+				cell_pop_size[start1:end1] = all_track;
+				defineGlobal("cell_pop_size",cell_pop_size);
+				before = cell_pop_size[start:end];
+				chasing_cell_no = c();
+				if (before[0] != -1){
+					//compare 5 generations later and before
+					cell_no = 0:(NUMBER_OF_CELLS-1);
+					for (i in cell_no){
+						if (before[i]==0 & pop_size!=0){ //<=0.01*before_pop_size/NUMBER_OF_CELLS
+							//print("======="+all_track[i]);
+							if (nondrive_track[i] >= num_nondrive/NUMBER_OF_CELLS & num_nondrive>=0.1*pop_size){
+								chasing_cell = chasing_cell + 1;
+								chasing_cell_no = c(chasing_cell_no,i);
+							}
+						}
+					}
+					if (before[0] != -1)
+						cat("chasing cells: ");
+					catn(chasing_cell_no);
+					defineGlobal("chasing_cells",chasing_cell_no);
+					if (chasing_start==0 & chasing_cell>=3){
+						sim.setValue("chasing start" , this_gen);
+					}
+				}
+			}
+			
+			// to compute the nearest neighbor index of all individuals
+			
+			nni_list = c();
+			for(ind in all){
+				dis_from_age2 = i20.interactionDistance(ind,p2.individuals);
+				dis_from_age3 = i20.interactionDistance(ind,p3.individuals);
+				dis_from_age4 = i20.interactionDistance(ind,p4.individuals);
+				dis_from_age5 = i20.interactionDistance(ind,p5.individuals);
+				dis_from_age6 = i20.interactionDistance(ind,p6.individuals);
+				dis_from_age7 = i20.interactionDistance(ind,p7.individuals);
+				dis_from_age8 = i20.interactionDistance(ind,p8.individuals);
+				dis_from_age9 = i20.interactionDistance(ind,p9.individuals);
+				dis_from_age10 = i20.interactionDistance(ind,p10.individuals);
+				dis_from_age11 = i20.interactionDistance(ind,p11.individuals);
+				dis_from_age15 = i20.interactionDistance(ind,p15.individuals);
+				dis_from_age16 = i20.interactionDistance(ind,p16.individuals);
+				dis_from_age17 = i20.interactionDistance(ind,p17.individuals);
+				dis_from_age18 = i20.interactionDistance(ind,p18.individuals);
+				dis_from_age19 = i20.interactionDistance(ind,p19.individuals);
+				dis_from_age20 = i20.interactionDistance(ind,p20.individuals);
+				dis=min(dis_from_age2,dis_from_age3,dis_from_age4,dis_from_age5,dis_from_age6,dis_from_age7,dis_from_age8,dis_from_age9,dis_from_age10,dis_from_age11,dis_from_age15,dis_from_age16,dis_from_age17,dis_from_age18,dis_from_age19,dis_from_age20);
+				
+				
+				
+				if(!isNULL(dis))
+					dis=dis;
+				else
+					dis = MONOGYNE_DIST;
+				nni_list = c(nni_list,dis);
+			}
+			
+			if (!isNULL(nni_list) & pop_size>1){
+				ave_of_nni = mean(nni_list);
+				var_of_nni = var(nni_list);
+			}
+			else {
+				ave_of_nni = 0;
+				var_of_nni = 0;
+			}
+			//Green's Coefficient is a measure of clustering for this generation
+			//when individuals are completely randomly distributed, GC = 0.
+			//when individuals are as clustered as possible, GC = 1.
+			
+			nondrive_pop_size = sum(nondrive_track);
+			expected_nni=0.5/sqrt(pop_size/SIM_BOUND^2);
+			
+			if (T) { //nondrive_pop_size > 1 todo
+				nondrive_greens_coeff = (var(nondrive_track)/mean(nondrive_track) - 1)/(sum(nondrive_track) - 1);
+				all_greens_coeff = (var(all_track)/mean(all_track) - 1)/(sum(all_track)-1);
+				
+				catn("WT_ALLELES:: " + num_wt + " " + this_gen + " " + pop_size + " "+rate_has_drive+" AVERAGE_NNI:: "+ave_of_nni+" VARIANCE_NNI:: "+var_of_nni+" NNI_index:: "+ ave_of_nni/expected_nni);
+			}
+		}	
+	ann = ave_of_nni/expected_nni;
+	}}
+	else
+		ann = 0.0;
+	
+	
+		poly_pop = c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11);
+	poly_inds = poly_pop.individuals;
+	mono_pop = c(p13,p14,p15,p16,p17,p18,p19,p20);
+	mono_inds = mono_pop.individuals;
+	mate_poly = c(p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11);
+	mate_mono = c(p14,p15,p16,p17,p18,p19,p20);
+	mate_poly_ind = mate_poly.individuals;
+	mate_mono_ind = mate_mono.individuals;
+	all_pop = c(poly_pop,mono_pop);
+	all_inds = all_pop.individuals;
+	this_gen = sim.cycle;
+	//Drive in polygyne
+	poly_dr = sum(poly_inds.genomes.countOfMutationsOfType(m2)==NUM_GRNAS);
+	poly_has_drive = sum(poly_inds.countOfMutationsOfType(m2) >= NUM_GRNAS);
+	r2_in_poly = sum(poly_inds.countOfMutationsOfType(m4) >= NUM_GRNAS);
+	poly_rate_dr = poly_dr/(size(poly_inds)*2);
+	poly_has_drive = poly_has_drive/size(poly_inds);
+	poly_r2 = r2_in_poly/size(poly_inds);
+	//Drive in monogyne
+	mono_dr = sum(mono_inds.genomes.countOfMutationsOfType(m2)==NUM_GRNAS);
+	mono_has_drive = sum(mono_inds.countOfMutationsOfType(m2) >= NUM_GRNAS);
+	r2_in_mono = sum(mono_inds.countOfMutationsOfType(m4) >= NUM_GRNAS);
+	mono_rate_dr = mono_dr/(size(mono_inds)*2);
+	mono_has_drive = mono_has_drive/size(mono_inds);
+	mono_r2 = r2_in_mono/size(mono_inds);
+	//Tags in each subpop
+	
+	poly_dr = mate_poly_ind[mate_poly_ind.tag == 2 | mate_poly_ind.tag == -2 | mate_poly_ind.tag == 6 | mate_poly_ind.tag == -6];
+	mono_dr = mate_mono_ind[mate_mono_ind.tag == 2 | mate_mono_ind.tag == -2 | mate_mono_ind.tag == 6 | mate_mono_ind.tag == -6];
+	poly_r2_mate = mate_poly_ind[mate_poly_ind.tag == 4 | mate_poly_ind.tag == -4 | mate_poly_ind.tag == 8 | mate_poly_ind.tag == -8];
+	mono_r2_mate = mate_mono_ind[mate_mono_ind.tag == 4 | mate_mono_ind.tag == -4 | mate_mono_ind.tag == 8 | mate_mono_ind.tag == -8];
+	poly_mate = mate_poly_ind[mate_poly_ind.tag != -100];
+	mono_mate = mate_mono_ind[mate_mono_ind.tag != 100];
+	poly_mate_dr_ratio = size(poly_dr)/size(poly_mate);
+	mono_mate_dr_ratio = size(mono_dr)/size(mono_mate);
+	
+	poly_mate_r2_ratio = size(poly_r2_mate)/size(poly_mate);
+	mono_mate_r2_ratio = size(mono_r2_mate)/size(mono_mate);
+	
+	
+	catn("DATA:: " + size(poly_inds) + " " + p0.individualCount + " " + p1.individualCount + " " + p2.individualCount + " " +p3.individualCount + " " +p4.individualCount + " " + p5.individualCount + " " +p6.individualCount + " " +p7.individualCount + " " + p8.individualCount + " " +p9.individualCount+ " " +p10.individualCount+ " " +p11.individualCount + " " + poly_rate_dr + " " + poly_has_drive + " " + poly_r2 + " "+ this_gen + " "  + size(mono_inds) + " " + p13.individualCount + " " + p14.individualCount + " " +p15.individualCount + " " +p16.individualCount + " " +p17.individualCount + " " +p18.individualCount + " " +p19.individualCount + " " + p20.individualCount + " " + mono_rate_dr + " " + mono_has_drive + " " + mono_r2 + " " + size(all_inds) + " " + poly_mate_dr_ratio + " " + poly_mate_r2_ratio + " " + mono_mate_dr_ratio + " " + mono_mate_r2_ratio + " " + ann + " ");
+
+}
+
+
+1: late(){
+	totally_mature = p11.individuals;
+	for (ind in totally_mature){
+		if (ind.age > 69)
+			sim.killIndividuals(ind);}
+	p11.takeMigrants(p10.individuals);
+	p10.takeMigrants(p9.individuals);
+	p9.takeMigrants(p8.individuals);
+	p8.takeMigrants(p7.individuals);
+	p7.takeMigrants(p6.individuals);
+	p6.takeMigrants(p5.individuals);
+	p5.takeMigrants(p4.individuals);
+	p4.takeMigrants(p3.individuals);
+	p3.takeMigrants(p2.individuals);
+	p2.takeMigrants(p1.individuals);
+	p1.takeMigrants(p0.individuals);
+	//Monogyne
+	sim.killIndividuals(p20.individuals);
+	p20.takeMigrants(p19.individuals);
+	p19.takeMigrants(p18.individuals);
+	p18.takeMigrants(p17.individuals);
+	p17.takeMigrants(p16.individuals);
+	p16.takeMigrants(p15.individuals);
+	p15.takeMigrants(p14.individuals);
+	p14.takeMigrants(p13.individuals);
+}
+
+////END CONDITION.
+102 late() {
+	// Output 1000 generations after drop if simulation hasn't ended already
+	total_pop = c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14,p15,p16,p17,p18,p19,p20);
+	all = total_pop.individuals;
+	has_drive = sum(all.countOfMutationsOfType(m2) >= NUM_GRNAS);
+	rate_has_drive = has_drive / size(all);
+	catn("ENDING_AFTER_1000:: " + rate_has_drive); //show the rate of individuals with drive
+	sim.simulationFinished();
+}
+
+//// EVALUATE SPATIAL INTERACTIONS BETWEEN INDIVIDUALS FOR MATE SELECTION.
+late() {
+	polygyne = c(p1,p2, p3,p4,p5,p6,p7,p8,p9,p10,p11);
+	monogyne = c(p14,p15,p16,p17,p18,p19,p20);
+	total_subpop = c(monogyne,polygyne);
+	i1.evaluate(sim.subpopulations);
+	for(subpop in total_subpop){
+		i1.evaluate(c(p1,subpop));
+		i1.evaluate(c(p2,subpop));
+		i1.evaluate(c(p3,subpop));
+		i1.evaluate(c(p4,subpop));
+		i1.evaluate(c(p5,subpop));
+		i1.evaluate(c(p6,subpop));
+		i1.evaluate(c(p7,subpop));
+		i1.evaluate(c(p8,subpop));
+		i1.evaluate(c(p9,subpop));
+		i1.evaluate(c(p10,subpop));
+		i1.evaluate(c(p11,subpop));
+		i1.evaluate(c(p14,subpop));
+		i1.evaluate(c(p15,subpop));
+		i1.evaluate(c(p16,subpop));
+		i1.evaluate(c(p17,subpop));
+		i1.evaluate(c(p18,subpop));
+		i1.evaluate(c(p19,subpop));
+		i1.evaluate(c(p20,subpop));
+		}
+	i2.evaluate(p14); //i2 for age1(p14)
+	for(subpop in c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p15,p16,p17,p18,p19,p20))
+		i2.evaluate(c(p14,subpop));
+	i4.evaluate(p15);
+	for(subpop in c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14,p16,p17,p18,p19,p20))
+		i4.evaluate(c(p15,subpop));
+	i5.evaluate(p16);
+	for(subpop in c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14,p15,p17,p18,p19,p20))
+		i5.evaluate(c(p16,subpop));
+	i6.evaluate(p17);
+	for(subpop in c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14,p15,p16,p18,p19,p20))
+		i6.evaluate(c(p17,subpop));
+	i7.evaluate(p18);
+	for(subpop in c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14,p15,p16,p17,p19,p20))
+		i7.evaluate(c(p18,subpop));
+	i8.evaluate(p19);
+	for(subpop in c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14,p15,p16,p17,p18,p20))
+		i8.evaluate(c(p19,subpop));
+	i9.evaluate(p20);
+	for(subpop in c(p0, p1, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14,p15,p16,p17,p18,p19))
+		i9.evaluate(c(p20,subpop));
+	//POLYGYNE
+	i11.evaluate(p1); //i11 for polygyne age1(p1)
+	for(subpop in c(p0, p2, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i11.evaluate(c(p1,subpop));
+	i12.evaluate(p2);
+	for(subpop in c(p0, p1, p3,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i12.evaluate(c(p2,subpop));
+	i13.evaluate(p3);
+	for(subpop in c(p0, p1, p2,p4,p5,p6,p7,p8,p9,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i13.evaluate(c(p3,subpop));
+	i14.evaluate(p4);
+	for(subpop in c(p0, p1, p3,p2,p5,p6,p7,p8,p9,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i14.evaluate(c(p4,subpop));
+	i15.evaluate(p5);
+	for(subpop in c(p0, p1, p2,p3,p4,p6,p7,p8,p9,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i15.evaluate(c(p5,subpop));
+	i16.evaluate(p6);
+	for(subpop in c(p0, p1, p2,p3,p4,p5,p7,p8,p9,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i16.evaluate(c(p6,subpop));
+	i17.evaluate(p7);
+	for(subpop in c(p0, p1, p2,p3,p4,p5,p6,p8,p9,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i17.evaluate(c(p7,subpop));
+	i18.evaluate(p8);
+	for(subpop in c(p0, p1, p2,p3,p4,p5,p6,p7,p9,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i18.evaluate(c(p8,subpop));
+	i19.evaluate(p9);
+	for(subpop in c(p0, p1, p2,p3,p4,p5,p6,p7,p8,p10,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i19.evaluate(c(p9,subpop));
+	i19.evaluate(p10);
+	for(subpop in c(p0, p1, p2,p3,p4,p5,p6,p7,p8,p9,p11,p13,p14, p15,p16,p17,p18,p19,p20))
+		i19.evaluate(c(p10,subpop));
+	i19.evaluate(p11);
+	for(subpop in c(p0, p1, p2,p3,p4,p5,p6,p7,p8,p9,p10,p13,p14, p15,p16,p17,p18,p19,p20))
+		i19.evaluate(c(p11,subpop));
+}
+
+/*
+//// SET OUTPUT PATH FOR VISUALIZATION  FUNCTION:
+1 early() {
+    defineConstant("OUTPUT_PATH", getwd() + "/singlemate_" + OUTFILE);
+    deleteFile(OUTPUT_PATH);
+}
+//// VISUALIZATION FUNCTION:
+late() {
+    all = sim.subpopulations[0].individuals;
+    output_str = "G";
+    for (ind in all) {
+        ind_colors = color2rgb(ind.color);
+        hex_x = format("%.3x ", asInteger(ind.x * 4095 + 0.5));
+        hex_y = format("%.3x ", asInteger(ind.y * 4095 + 0.5));
+        hex_r = format("%.2x ", asInteger(255 * ind_colors[0]));
+        hex_g = format("%.2x ", asInteger(255 * ind_colors[1]));
+        hex_b = format("%.2x",  asInteger(255 * ind_colors[2]));
+        output_str = output_str + "\n" +  hex_x + hex_y + hex_r + hex_g + hex_b;
+    }
+    writeFile(OUTPUT_PATH, output_str, T);
+}
+*/
